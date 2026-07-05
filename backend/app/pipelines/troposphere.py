@@ -65,7 +65,7 @@ class TropospherePipeline(Pipeline):
             "properties": {
                 "test_ratio": {
                     "type": "number", "title": "测试集比例",
-                    "default": 0.2, "minimum": 0.1, "maximum": 0.5,
+                    "default": 0.35, "minimum": 0.2, "maximum": 0.5,
                 },
                 "ml_hidden_dims": {
                     "type": "string", "title": "ML隐藏层结构",
@@ -120,7 +120,7 @@ class TropospherePipeline(Pipeline):
         log("划分训练/测试集...", "split")
         stations = list(set(r['station'] for r in all_records))
         rng = np.random.default_rng(config.random_seed)
-        n_test_stations = max(1, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
+        n_test_stations = max(2, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
         test_stations = set(rng.choice(stations, n_test_stations, replace=False))
         train_stations = [s for s in stations if s not in test_stations]
 

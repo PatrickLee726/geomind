@@ -218,6 +218,8 @@
         <span class="footer-version">v0.1.0</span>
       </div>
       <div class="footer-right">
+        <router-link to="/compare">对比记录</router-link>
+        <span class="footer-divider">·</span>
         <a href="https://github.com/PatrickLee726/geomind/blob/master/LICENSE" target="_blank">MIT License</a>
         <span class="footer-divider">·</span>
         <a href="https://github.com/PatrickLee726/geomind" target="_blank">GitHub</a>

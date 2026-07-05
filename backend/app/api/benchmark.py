@@ -1,6 +1,8 @@
 """Benchmark API —— 一键跑分，返回四案例精度汇总"""
 
 from fastapi import APIRouter
+from fastapi.responses import FileResponse
+import os
 
 router = APIRouter(prefix="/api/benchmark", tags=["benchmark"])
 
@@ -80,3 +82,13 @@ async def benchmark_results():
         "cases": BENCHMARK_DATA,
         "summary": SUMMARY,
     }
+
+
+@router.get("/report/pdf")
+async def download_report():
+    """下载 Benchmark PDF 报告"""
+    pdf_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "benchmark_report.pdf")
+    pdf_path = os.path.abspath(pdf_path)
+    if not os.path.exists(pdf_path):
+        return {"error": "报告文件尚未生成，请先运行 gen_report.py"}, 404
+    return FileResponse(pdf_path, media_type="application/pdf", filename="GeoMind_Benchmark_Report.pdf")

@@ -9,6 +9,9 @@
     <template v-if="!loading && result">
       <h1>计算结果</h1>
       <p class="case-name">{{ result.case_id }}</p>
+      <button class="save-btn" @click="saveResult" v-if="result.final_metrics">
+        💾 保存此结果到对比列表
+      </button>
 
       <!-- 摘要 -->
       <section class="section">
@@ -100,6 +103,36 @@ onMounted(async () => {
 function getChartUrl(name) {
   return api.getChart(jobId, name)
 }
+
+const caseNames = { troposphere: '对流层 ZTD', ionosphere: '电离层 VTEC', gnss: 'GNSS 基线网', elevation: '高程异常' }
+const units = { troposphere: 'cm', ionosphere: 'TECU', gnss: 'mm', elevation: 'm' }
+
+function saveResult() {
+  const m = result.value?.final_metrics
+  if (!m) return
+  const classicKey = Object.keys(m).find(k => k === 'classical' || k === 'harmonic')
+  const mlKey = Object.keys(m).find(k => k === 'ml')
+  if (!classicKey || !mlKey) return
+  const cRmse = m[classicKey]?.RMSE || m[classicKey]?.rmse || 0
+  const mlRmse = m[mlKey]?.RMSE || m[mlKey]?.rmse || 0
+  const impr = cRmse > 0 ? Math.round((1 - mlRmse / cRmse) * 1000) / 10 : 0
+  const cid = result.value?.case_id || ''
+  const record = {
+    caseName: caseNames[cid] || cid,
+    classicRmse: Math.round(cRmse * 1000) / 1000,
+    mlRmse: Math.round(mlRmse * 1000) / 1000,
+    unit: units[cid] || '',
+    improvement: impr,
+    paramsSummary: JSON.stringify(result.value?.params || {}).slice(0, 60),
+    time: new Date().toLocaleString('zh-CN'),
+  }
+  const key = 'geomind_compare_records'
+  const arr = JSON.parse(localStorage.getItem(key) || '[]')
+  arr.unshift(record)
+  if (arr.length > 20) arr.pop()
+  localStorage.setItem(key, JSON.stringify(arr))
+  alert('已保存！前往 /compare 查看对比')
+}
 </script>
 
 <style scoped>
@@ -108,6 +141,22 @@ function getChartUrl(name) {
 .back-link:hover { transform: translateX(-4px); }
 h1 { font-size: 28px; color: #1a365d; margin-bottom: 4px; animation: slideDown 0.4s ease-out; }
 .case-name { color: #6b7c8e; font-size: 13px; margin-bottom: 24px; animation: fadeIn 0.5s 0.1s ease-out both; }
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  margin-bottom: 24px;
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.05);
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.save-btn:hover { background: rgba(59,130,246,0.1); border-style: solid; }
 
 .section { 
   background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; 

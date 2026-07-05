@@ -116,6 +116,7 @@
     <!-- CTA -->
     <div class="bm-cta">
       <router-link to="/" class="cta-primary">返回首页体验</router-link>
+      <a :href="pdfUrl" class="cta-pdf" download>📄 下载 PDF 报告</a>
       <a href="https://github.com/PatrickLee726/geomind" target="_blank" class="cta-secondary">GitHub 查看源码</a>
     </div>
   </div>
@@ -160,6 +161,7 @@ const barRef = ref(null)
 const confettiCanvas = ref(null)
 const showConfetti = ref(false)
 const kpiDone = reactive({ totalScenes: false, maxGain: false, avgGain: false, allPositive: false })
+const pdfUrl = '/api/benchmark/report/pdf'
 
 function classicBarPct(c) {
   // Normalize: bar width relative to classic RMSE across all cases
@@ -684,6 +686,20 @@ function renderCharts() {
   border: 1px solid #334155;
 }
 .cta-secondary:hover { border-color: #3b82f6; color: #fff; }
+.cta-pdf {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(220,38,38,0.3);
+}
+.cta-pdf:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(220,38,38,0.45); }
 
 @media (max-width: 768px) {
   .bm-kpi-row { grid-template-columns: repeat(2, 1fr); }

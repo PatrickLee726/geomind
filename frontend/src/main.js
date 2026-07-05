@@ -5,12 +5,14 @@ import Home from './views/Home.vue'
 import CasePage from './views/CasePage.vue'
 import ResultPage from './views/ResultPage.vue'
 import BenchmarkPage from './views/BenchmarkPage.vue'
+import ComparePage from './views/ComparePage.vue'
 
 const routes = [
   { path: '/', component: Home },
   { path: '/case/:id', component: CasePage, props: true },
   { path: '/result/:jobId', component: ResultPage, props: true },
   { path: '/benchmark', component: BenchmarkPage },
+  { path: '/compare', component: ComparePage },
 ]
 
 const router = createRouter({

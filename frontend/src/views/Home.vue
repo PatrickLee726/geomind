@@ -314,6 +314,9 @@ function scrollToCases() {
 .hero-content {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 60px 24px;
   max-width: 640px;
@@ -899,18 +902,20 @@ function scrollToCases() {
 
 /* ========== Hero GitHub Link ========== */
 .hero-github {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 20px;
-  padding: 8px 20px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.1);
-  color: #a3bffa;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 20px auto 0;
+  padding: 10px 24px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid rgba(255,255,255,0.12);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.18);
   transition: all 0.3s ease;
 }
 .hero-github:hover {

@@ -115,14 +115,19 @@
 .stagger-enter > *:nth-child(10) { animation-delay: 0.50s; }
 
 /* ---------- 全局平滑滚动 ---------- */
-html { scroll-behavior: smooth; }
+/* 已禁用：与路由过渡冲突 */
+html { scroll-behavior: auto; }
 
 /* ---------- 路由过渡 ---------- */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.35s ease;
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
+.page-enter-from {
   opacity: 0;
+  transform: translateY(8px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }

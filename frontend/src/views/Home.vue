@@ -244,7 +244,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../api.js'
 
@@ -268,6 +268,8 @@ onMounted(() => {
   }
   resize()
   window.addEventListener('resize', resize)
+  let active = true
+  onUnmounted(() => { active = false; window.removeEventListener('resize', resize) })
 
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     particles.push({
@@ -280,6 +282,7 @@ onMounted(() => {
   }
 
   function draw() {
+    if (!active) return
     ctx.clearRect(0, 0, w, h)
 
     // === 3D 旋转线框地球 ===
@@ -445,6 +448,8 @@ onMounted(() => {
   }
   fresize()
   window.addEventListener('resize', fresize)
+  let fActive = true
+  onUnmounted(() => { fActive = false; window.removeEventListener('resize', fresize) })
   for (let i = 0; i < 40; i++) {
     fParticles.push({
       x: Math.random() * fw, y: Math.random() * fh,
@@ -453,6 +458,7 @@ onMounted(() => {
     })
   }
   function fdraw() {
+    if (!fActive) return
     if (!fc.parentElement || fc.parentElement.offsetParent === null) {
       fAnim = requestAnimationFrame(fdraw); return
     }

@@ -379,7 +379,7 @@ function applySweepResult() {
 function saveJobRef(jobId, caseId) {
   const key = 'geomind_jobs'
   const arr = JSON.parse(localStorage.getItem(key) || '[]')
-  arr.unshift({ jobId, caseId, time: new Date().toLocaleString('zh-CN') })
+  arr.unshift({ jobId, caseId, time: new Date().toLocaleString('zh-CN'), status: 'running' })
   if (arr.length > 30) arr.pop()
   localStorage.setItem(key, JSON.stringify(arr))
   // 同步更新全局任务计数

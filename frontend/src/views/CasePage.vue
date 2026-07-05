@@ -37,7 +37,7 @@
           </label>
           <label class="field">
             DOY（逗号分隔）：
-            <input v-model="daysInput" placeholder="1, 91, 181, 271, 361" />
+            <input v-model="daysInput" placeholder="1,46,91,136,181,226,271,316,361" />
           </label>
           <button class="btn" @click="loadIGSData">加载数据</button>
           <div v-if="dataProfile" class="data-info">
@@ -252,7 +252,7 @@ const schemaProps = ref({})
 const sourceType = ref('igs')
 const igsStations = ref([])
 const selectedStations = ref(['BJFS', 'SHAO', 'CHAN', 'WUHN', 'URUM', 'TWTF'])
-const daysInput = ref('1, 91, 181, 271, 361')
+const daysInput = ref('1,46,91,136,181,226,271,316,351,5')
 const troFiles = ref([])
 const metFiles = ref([])
 const dataProfile = ref(null)

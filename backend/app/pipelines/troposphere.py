@@ -65,7 +65,7 @@ class TropospherePipeline(Pipeline):
             "properties": {
                 "test_ratio": {
                     "type": "number", "title": "测试集比例",
-                    "default": 0.35, "minimum": 0.2, "maximum": 0.5,
+                    "default": 0.2, "minimum": 0.1, "maximum": 0.5,
                 },
                 "ml_hidden_dims": {
                     "type": "string", "title": "ML隐藏层结构",
@@ -120,7 +120,7 @@ class TropospherePipeline(Pipeline):
         log("划分训练/测试集...", "split")
         stations = list(set(r['station'] for r in all_records))
         rng = np.random.default_rng(config.random_seed)
-        n_test_stations = max(2, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
+        n_test_stations = max(1, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
         test_stations = set(rng.choice(stations, n_test_stations, replace=False))
         train_stations = [s for s in stations if s not in test_stations]
 
@@ -227,6 +227,8 @@ class TropospherePipeline(Pipeline):
                 np.sin(2*np.pi*hour_arr/24.0), np.cos(2*np.pi*hour_arr/24.0),
                 P_gpt3, T_gpt3, e_gpt3_arr,
             ])
+            # 完整特征（实测优先）
+            X_full = X.copy()
 
             def train_ml(X_feat, y_tr, y_te, test_idx, name, hidden_str, epochs, lr):
                 hidden_dims = [int(x.strip()) for x in hidden_str.split(',')]
@@ -250,9 +252,7 @@ class TropospherePipeline(Pipeline):
                 for ep in range(epochs):
                     model.train()
                     pred = model(X_tr_t); loss = nn.MSELoss()(pred, Y_tr_t)
-                    opt.zero_grad(); loss.backward()
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0)
-                    opt.step()
+                    opt.zero_grad(); loss.backward(); opt.step()
                     sch.step(loss.item())
                     if loss.item() < best_loss:
                         best_loss = loss.item()
@@ -269,9 +269,12 @@ class TropospherePipeline(Pipeline):
             ml_gpt3_rmse = np.sqrt(np.mean((pred_ml_gpt3 - y_test)**2)) * 100
             log(f"  ML+GPT3      RMSE = {ml_gpt3_rmse:.2f} cm")
 
-            pred_ml_full = None
-            ml_full_rmse = float('nan')
-            log(f"  （ML+实测气象已禁用，数据量不足以跨站泛化）")
+            pred_ml_full = train_ml(X_full, y_train, y_test, test_mask,
+                "ML+实测", config.params.get('ml_hidden_dims', config.ml_params.get('hidden_dims', '128,256,128,64')),
+                config.params.get('ml_epochs', config.ml_params.get('epochs', 2000)),
+                config.params.get('ml_learning_rate', config.ml_params.get('learning_rate', 0.001)))
+            ml_full_rmse = np.sqrt(np.mean((pred_ml_full - y_test)**2)) * 100
+            log(f"  ML+实测气象  RMSE = {ml_full_rmse:.2f} cm")
 
             result.steps.append(StepResult(
                 name="ML训练", status="done",

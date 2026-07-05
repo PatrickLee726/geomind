@@ -122,7 +122,8 @@
     </section>
 
     <!-- ====== Forkable Developer Section ====== -->
-    <section class="fork-section">
+    <section class="fork-section" ref="forkSection">
+      <canvas ref="forkCanvas" class="fork-canvas"></canvas>
       <div class="fork-bg-dots">
         <span class="dot-item" v-for="n in 20" :key="n"
           :style="{ left: (n*47)%100 + '%', top: (n*31)%100 + '%', animationDelay: (n*0.15)+'s' }"
@@ -389,6 +390,8 @@ const forkItems = [
 // 代码打字机
 const codeRef = ref(null)
 const codeStarted = ref(false)
+const forkCanvas = ref(null)
+const forkSection = ref(null)
 
 const codeSource = `<span class="line-num"> 1</span>  <span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
 <span class="line-num"> 2</span>      case_id = <span class="str">"my_case"</span>
@@ -420,15 +423,65 @@ function startTyping() {
 }
 
 onMounted(() => {
+  // Code typing observer
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) { startTyping(); observer.disconnect() }
   }, { threshold: 0.3 })
-  setTimeout(() => {
-    const el = document.querySelector('.fork-section')
-    if (el) observer.observe(el)
-  }, 500)
-  // Fallback
+  const el = forkSection.value
+  if (el) observer.observe(el)
   setTimeout(() => { if (!codeStarted.value) startTyping() }, 4000)
+
+  // Fork section particle canvas
+  const fc = forkCanvas.value
+  if (!fc) return
+  const fctx = fc.getContext('2d')
+  let fw, fh, fAnim
+  const fParticles = []
+  function fresize() {
+    const rect = fc.parentElement.getBoundingClientRect()
+    fw = fc.width = rect.width
+    fh = fc.height = rect.height
+  }
+  fresize()
+  window.addEventListener('resize', fresize)
+  for (let i = 0; i < 40; i++) {
+    fParticles.push({
+      x: Math.random() * fw, y: Math.random() * fh,
+      vx: (Math.random()-0.5)*0.4, vy: (Math.random()-0.5)*0.4,
+      r: Math.random()*2+0.5, life: Math.random(),
+    })
+  }
+  function fdraw() {
+    if (!fc.parentElement || fc.parentElement.offsetParent === null) {
+      fAnim = requestAnimationFrame(fdraw); return
+    }
+    fctx.clearRect(0, 0, fw, fh)
+    for (const p of fParticles) {
+      p.x += p.vx; p.y += p.vy
+      if (p.x<0) p.x=fw; if (p.x>fw) p.x=0
+      if (p.y<0) p.y=fh; if (p.y>fh) p.y=0
+      p.life += 0.005; if (p.life>1) p.life=0
+      const alpha = Math.sin(p.life*Math.PI) * 0.5
+      fctx.beginPath()
+      fctx.arc(p.x, p.y, p.r, 0, Math.PI*2)
+      fctx.fillStyle = `rgba(96,165,250,${alpha})`
+      fctx.fill()
+    }
+    // Connect nearby
+    for (let i=0;i<fParticles.length;i++) {
+      for (let j=i+1;j<fParticles.length;j++) {
+        const p1=fParticles[i],p2=fParticles[j]
+        const d=Math.hypot(p1.x-p2.x,p1.y-p2.y)
+        if (d<70) {
+          fctx.beginPath(); fctx.moveTo(p1.x,p1.y); fctx.lineTo(p2.x,p2.y)
+          fctx.strokeStyle=`rgba(96,165,250,${0.04*(1-d/70)})`
+          fctx.lineWidth=0.4; fctx.stroke()
+        }
+      }
+    }
+    fAnim = requestAnimationFrame(fdraw)
+  }
+  fAnim = requestAnimationFrame(fdraw)
 })
 
 onMounted(async () => {
@@ -1134,6 +1187,12 @@ function scrollToCases() {
   overflow: hidden;
   animation: fadeInUp 0.5s 0.4s ease-out both, bgShift 8s ease-in-out infinite;
 }
+.fork-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
 @keyframes bgShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -1162,6 +1221,7 @@ function scrollToCases() {
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  z-index: 1;
 }
 .fork-bg-dots .dot-item {
   position: absolute;

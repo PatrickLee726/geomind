@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .api import cases, data, jobs, results, benchmark, sweep
+from .api import cases, data, jobs, results, benchmark, sweep, chain
 from .core.registry import register
 from .services.hot_reload import start_watcher
 from .pipelines.troposphere import TropospherePipeline
@@ -44,6 +44,7 @@ app.include_router(jobs.router)
 app.include_router(results.router)
 app.include_router(benchmark.router)
 app.include_router(sweep.router)
+app.include_router(chain.router)
 
 
 @app.get("/api/health")

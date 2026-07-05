@@ -74,7 +74,7 @@ class TropospherePipeline(Pipeline):
                 },
                 "ml_epochs": {
                     "type": "integer", "title": "ML训练轮数",
-                    "default": 500, "minimum": 100, "maximum": 5000,
+                    "default": 2000, "minimum": 100, "maximum": 10000,
                 },
                 "ml_learning_rate": {
                     "type": "number", "title": "学习率",
@@ -240,25 +240,25 @@ class TropospherePipeline(Pipeline):
                 X_te_t = torch.as_tensor((X_feat[test_mask] - X_mean) / X_std, dtype=torch.float32)
                 Y_tr_t = torch.as_tensor(((y_tr - y_mean) / y_std).reshape(-1, 1), dtype=torch.float32)
 
-                # 网络：BatchNorm → Linear → GELU → Dropout
-                layers = [nn.BatchNorm1d(input_dim)]
+                # 网络：GELU + Dropout（已标准化数据不需要 BatchNorm）
+                layers = []
                 prev = input_dim
                 for h in hidden_dims:
                     layers.append(nn.Linear(prev, h))
-                    layers.append(nn.BatchNorm1d(h))
                     layers.append(nn.GELU())
-                    layers.append(nn.Dropout(0.15))
+                    layers.append(nn.Dropout(0.1))
                     prev = h
                 layers.append(nn.Linear(prev, 1))
                 model = nn.Sequential(*layers)
-                opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+                opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
+                sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.5, patience=150, min_lr=1e-5)
                 sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.5, patience=100, min_lr=1e-5)
                 best_loss, best_state, patience_counter = float('inf'), None, 0
 
                 for ep in range(epochs):
                     model.train()
-                    # 数据增强：加小高斯噪声
-                    aug_noise = np.random.randn(*X_tr_raw.shape).astype(np.float32) * 0.02
+                    # 轻量数据增强
+                    aug_noise = np.random.randn(*X_tr_raw.shape).astype(np.float32) * 0.005
                     X_tr_t = torch.as_tensor(X_tr_raw + aug_noise, dtype=torch.float32)
                     pred = model(X_tr_t); loss = nn.MSELoss()(pred, Y_tr_t)
                     opt.zero_grad(); loss.backward()

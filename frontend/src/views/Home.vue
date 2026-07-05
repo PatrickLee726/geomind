@@ -218,6 +218,10 @@
         <span class="footer-version">v0.1.0</span>
       </div>
       <div class="footer-right">
+        <router-link to="/jobs" class="footer-jobs-link">
+          任务列表 <span class="jobs-badge" v-if="jobCount > 0">{{ jobCount }}</span>
+        </router-link>
+        <span class="footer-divider">·</span>
         <router-link to="/compare">对比记录</router-link>
         <span class="footer-divider">·</span>
         <a href="https://github.com/PatrickLee726/geomind/blob/master/LICENSE" target="_blank">MIT License</a>
@@ -373,6 +377,13 @@ onMounted(() => {
 const cases = ref([])
 const loading = ref(true)
 const errorMsg = ref('')
+const jobCount = ref(0)
+
+function refreshJobCount() {
+  const arr = JSON.parse(localStorage.getItem('geomind_jobs') || '[]')
+  jobCount.value = arr.length
+}
+onMounted(() => { refreshJobCount(); window.addEventListener('geomind:job-created', refreshJobCount) })
 
 const caseTags = {
   troposphere: '天顶延迟预测',
@@ -1571,6 +1582,20 @@ function scrollToCases() {
   transition: color 0.2s;
 }
 .footer-right a:hover { color: #3182ce; }
+.footer-jobs-link { display: inline-flex; align-items: center; gap: 4px; }
+.jobs-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 5px;
+}
 .footer-divider {
   color: #cbd5e0;
   font-size: 13px;

@@ -218,6 +218,9 @@
           <span class="status-badge" :class="jobStatus.status">{{ statusLabel[jobStatus.status] }}</span>
           <span>{{ jobStatus.message }}</span>
         </div>
+        <div v-if="jobStatus?.job_id && jobStatus?.status !== 'done'" class="back-link-inline">
+          <router-link to="/">← 返回首页（任务将继续在后台运行）</router-link>
+        </div>
         <div v-if="jobStatus?.status === 'done'" class="done-actions">
           <router-link :to="`/result/${jobStatus.job_id}`" class="btn primary">
             查看结果 →
@@ -371,6 +374,16 @@ function applySweepResult() {
     }
   }
   sweepResult.value = null
+}
+
+function saveJobRef(jobId, caseId) {
+  const key = 'geomind_jobs'
+  const arr = JSON.parse(localStorage.getItem(key) || '[]')
+  arr.unshift({ jobId, caseId, time: new Date().toLocaleString('zh-CN') })
+  if (arr.length > 30) arr.pop()
+  localStorage.setItem(key, JSON.stringify(arr))
+  // 同步更新全局任务计数
+  window.dispatchEvent(new CustomEvent('geomind:job-created'))
 }
 
 onMounted(async () => {
@@ -535,6 +548,8 @@ async function submitJob() {
     const res = await api.submitJob(payload)
     const jobId = res.data.job_id
     jobStatus.value = { job_id: jobId, status: 'pending', message: '已提交' }
+    // 记录到全局任务列表
+    saveJobRef(jobId, caseId)
     pollJob(jobId)
   } catch (e) {
     jobStatus.value = { status: 'failed', message: '提交失败: ' + (e.response?.data?.error || e.message) }
@@ -563,6 +578,16 @@ async function pollJob(jobId) {
 <style scoped>
 .case-page { max-width: 800px; margin: 0 auto; }
 .back-link { margin-bottom: 16px; font-size: 14px; color: #3182ce; }
+.back-link-inline {
+  margin: 12px 0;
+  font-size: 13px;
+}
+.back-link-inline a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+.back-link-inline a:hover { text-decoration: underline; }
 h1 { font-size: 28px; color: #1a365d; margin-bottom: 4px; }
 .desc { color: #6b7c8e; font-size: 14px; line-height: 1.6; margin-bottom: 32px; }
 

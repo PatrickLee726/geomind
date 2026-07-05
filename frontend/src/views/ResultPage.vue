@@ -33,7 +33,12 @@
         </div>
       </section>
 
-      <!-- 图表 -->
+      <!-- 特征重要性 -->
+      <section class="section" v-if="hasFeatureImportance">
+        <h2>ML 特征重要性</h2>
+        <p class="fi-note">Permutation-based：打乱该特征后 RMSE 上升越多越重要</p>
+        <div ref="fiChartRef" class="fi-chart"></div>
+      </section>
       <section class="section" v-if="chartNames.length">
         <h2>可视化图表</h2>
         <div v-for="name in chartNames" :key="name" class="chart-container">
@@ -62,12 +67,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api.js'
+import * as echarts from 'echarts'
 
 const route = useRoute()
 const jobId = route.params.jobId
+const fiChartRef = ref(null)
+
+const hasFeatureImportance = computed(() => {
+  const fi = result.value?.feature_importance
+  return fi && Object.keys(fi).length > 0
+})
 
 const loading = ref(true)
 const error = ref(null)
@@ -98,7 +110,36 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+  if (result.value?.feature_importance) {
+    await nextTick()
+    renderFichart()
+  }
 })
+
+function renderFichart() {
+  const el = fiChartRef.value
+  if (!el) return
+  const fi = result.value?.feature_importance || {}
+  const entries = Object.entries(fi).sort((a, b) => a[1] - b[1])
+  const chart = echarts.init(el)
+  chart.setOption({
+    tooltip: {},
+    grid: { left: '20%', right: '10%', top: '5%', bottom: '5%' },
+    xAxis: { type: 'value', name: '相对重要性', axisLabel: { fontSize: 11 } },
+    yAxis: { type: 'category', data: entries.map(e => e[0]), axisLabel: { fontSize: 11, width: 80, overflow: 'truncate' } },
+    series: [{
+      type: 'bar',
+      data: entries.map(e => e[1]),
+      itemStyle: {
+        color: { type: 'linear', x: 0, y: 0, x2: 1, y2: 0,
+          colorStops: [{ offset: 0, color: '#2563eb' }, { offset: 1, color: '#60a5fa' }] },
+        borderRadius: [0, 4, 4, 0],
+      },
+      barWidth: '60%',
+      label: { show: true, position: 'right', fontSize: 11, formatter: '{c}' },
+    }],
+  })
+}
 
 function getChartUrl(name) {
   return api.getChart(jobId, name)
@@ -157,6 +198,9 @@ h1 { font-size: 28px; color: #1a365d; margin-bottom: 4px; animation: slideDown 0
   transition: all 0.25s;
 }
 .save-btn:hover { background: rgba(59,130,246,0.1); border-style: solid; }
+
+.fi-note { font-size: 12px; color: #94a3b8; margin-bottom: 16px; }
+.fi-chart { width: 100%; height: 280px; }
 
 .section { 
   background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; 

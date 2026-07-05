@@ -1,0 +1,8 @@
+node_modules
+__pycache__
+*.pyc
+data/results
+data/uploads
+data/model_cache
+.git
+*.log

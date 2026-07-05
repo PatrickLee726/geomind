@@ -78,6 +78,7 @@ class PipelineResult:
     final_metrics: Dict[str, Dict[str, float]] = field(default_factory=dict)
     charts: Dict[str, str] = field(default_factory=dict)   # name → path
     summary: str = ""
+    feature_importance: Dict[str, float] = field(default_factory=dict)
 
 
 class Pipeline(ABC):
@@ -215,3 +216,65 @@ class Pipeline(ABC):
         if progress_callback:
             progress_callback(1.0, f"扫描完成，最优参数: {results[0]['params'] if results else 'N/A'}")
         return results
+
+    @staticmethod
+    def compute_feature_importance(model, X: np.ndarray, y: np.ndarray,
+                                     feature_names: List[str] = None,
+                                     metric_fn=None, n_repeats: int = 5) -> Dict[str, float]:
+        """
+        Permutation-based 特征重要性分析。
+        对每个特征进行随机打乱，测量模型预测误差的上升幅度。
+        适用于任何模型（PyTorch / sklearn / NumPy）。
+        """
+        if metric_fn is None:
+            def metric_fn(y_true, y_pred):
+                return np.sqrt(np.mean((y_true - y_pred) ** 2))
+
+        # Baseline prediction
+        try:
+            if hasattr(model, 'predict'):
+                y_pred_base = model.predict(X)
+            elif hasattr(model, '__call__'):
+                import torch
+                model.eval()
+                with torch.no_grad():
+                    X_t = torch.tensor(X, dtype=torch.float32)
+                    y_pred_base = model(X_t).cpu().numpy().flatten()
+            else:
+                return {}
+        except Exception:
+            return {}
+
+        baseline = metric_fn(y, y_pred_base)
+        n_features = X.shape[1]
+        if feature_names is None:
+            feature_names = [f"f{i}" for i in range(n_features)]
+
+        importances = {}
+        for fi in range(n_features):
+            scores = []
+            for _ in range(n_repeats):
+                X_perm = X.copy()
+                np.random.shuffle(X_perm[:, fi])
+                try:
+                    if hasattr(model, 'predict'):
+                        y_pred = model.predict(X_perm)
+                    else:
+                        import torch
+                        with torch.no_grad():
+                            X_t = torch.tensor(X_perm, dtype=torch.float32)
+                            y_pred = model(X_t).cpu().numpy().flatten()
+                    scores.append(metric_fn(y, y_pred))
+                except Exception:
+                    continue
+            if scores:
+                # 重要性 = 打乱后 RMSE 均值 - 基线 RMSE
+                importances[feature_names[fi]] = round(np.mean(scores) - baseline, 6)
+
+        # 归一化到 0-1
+        if importances:
+            max_v = max(importances.values())
+            if max_v > 0:
+                importances = {k: round(v / max_v, 4) for k, v in importances.items()}
+
+        return dict(sorted(importances.items(), key=lambda x: -x[1]))

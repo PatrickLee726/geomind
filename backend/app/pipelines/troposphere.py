@@ -236,46 +236,29 @@ class TropospherePipeline(Pipeline):
                 X_mean = X_feat[train_mask].mean(axis=0)
                 X_std = X_feat[train_mask].std(axis=0) + 1e-8
                 y_mean = y_tr.mean(); y_std = y_tr.std() + 1e-8
-                X_tr_raw = (X_feat[train_mask] - X_mean) / X_std
+                X_tr_t = torch.as_tensor((X_feat[train_mask] - X_mean) / X_std, dtype=torch.float32)
                 X_te_t = torch.as_tensor((X_feat[test_mask] - X_mean) / X_std, dtype=torch.float32)
                 Y_tr_t = torch.as_tensor(((y_tr - y_mean) / y_std).reshape(-1, 1), dtype=torch.float32)
-
-                # 网络：GELU + Dropout（已标准化数据不需要 BatchNorm）
                 layers = []
                 prev = input_dim
                 for h in hidden_dims:
-                    layers.append(nn.Linear(prev, h))
-                    layers.append(nn.GELU())
-                    layers.append(nn.Dropout(0.1))
-                    prev = h
+                    layers.append(nn.Linear(prev, h)); layers.append(nn.GELU())
+                    layers.append(nn.Dropout(0.1)); prev = h
                 layers.append(nn.Linear(prev, 1))
                 model = nn.Sequential(*layers)
                 opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
                 sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.5, patience=150, min_lr=1e-5)
-                sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.5, patience=100, min_lr=1e-5)
-                best_loss, best_state, patience_counter = float('inf'), None, 0
-
+                best_loss, best_state = float('inf'), None
                 for ep in range(epochs):
                     model.train()
-                    # 轻量数据增强
-                    aug_noise = np.random.randn(*X_tr_raw.shape).astype(np.float32) * 0.005
-                    X_tr_t = torch.as_tensor(X_tr_raw + aug_noise, dtype=torch.float32)
                     pred = model(X_tr_t); loss = nn.MSELoss()(pred, Y_tr_t)
                     opt.zero_grad(); loss.backward()
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                    opt.step(); sch.step(loss.item())
-
-                    if loss.item() < best_loss * 0.999:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0)
+                    opt.step()
+                    sch.step(loss.item())
+                    if loss.item() < best_loss:
                         best_loss = loss.item()
                         best_state = {k: v.clone() for k, v in model.state_dict().items()}
-                        patience_counter = 0
-                    else:
-                        patience_counter += 1
-
-                    # Early stopping
-                    if patience_counter > 300 and ep > 500:
-                        break
-
                 model.load_state_dict(best_state)
                 model.eval()
                 with torch.no_grad():

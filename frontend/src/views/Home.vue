@@ -4,8 +4,8 @@
     <section class="hero-full">
       <div class="hero-content">
         <h1 class="hero-title">
-          <span class="title-main">测智�?GeoMind</span>
-          <span class="title-sub">开源可分叉�?AI 平差计算引擎</span>
+          <span class="title-main">测智云 GeoMind</span>
+          <span class="title-sub">开源可分叉的 AI 平差计算引擎</span>
         </h1>
         <p class="hero-desc">
           将机器学习引入测绘平差的精度引擎
@@ -16,23 +16,24 @@
         </a>
         <div class="hero-actions">
           <router-link to="/benchmark" class="hero-bench-btn">
-            �?一键跑�?          </router-link>
+            ⚡ 一键跑分
+          </router-link>
           <button class="hero-cta" @click="scrollToCases">
             <span>进入实验</span>
-            <span class="cta-arrow">�?/span>
+            <span class="cta-arrow">↓</span>
           </button>
         </div>
       </div>
 
-      <!-- 背景装饰：粒子网�?+ 卫星轨道 -->
+      <!-- 背景装饰：粒子网络 + 卫星轨道 -->
       <canvas ref="heroCanvas" class="hero-canvas"></canvas>
       <div class="hero-decoration">
         <div class="orbit-ring ring-1"></div>
         <div class="orbit-ring ring-2"></div>
         <div class="orbit-ring ring-3"></div>
-        <div class="satellite sat-1">🛰�?/div>
-        <div class="satellite sat-2">🛰�?/div>
-        <div class="satellite sat-3">🛰�?/div>
+        <div class="satellite sat-1">🛰️</div>
+        <div class="satellite sat-2">🛰️</div>
+        <div class="satellite sat-3">🛰️</div>
         <div class="earth"></div>
       </div>
     </section>
@@ -40,7 +41,7 @@
     <!-- ====== 案例选择 ====== -->
     <section class="cases-section" id="cases-anchor">
       <h2 class="section-title">四大平差场景</h2>
-      <p class="section-subtitle">每个场景内置经典方法�?ML 双路线，点击卡片进入</p>
+      <p class="section-subtitle">每个场景内置经典方法与 ML 双路线，点击卡片进入</p>
 
       <div class="case-grid">
         <div
@@ -50,13 +51,13 @@
           @click="goCase(c.id)"
           :style="{ animationDelay: (idx * 0.12) + 's' }"
         >
-          <!-- CSS 示意�?-->
+          <!-- CSS 示意图 -->
           <div class="card-diagram" :class="'diagram-' + c.id">
             <div class="diagram-inner">
               <!-- Troposphere -->
               <template v-if="c.id === 'troposphere'">
-                <div class="trop-sat1">🛰�?/div>
-                <div class="trop-sat2">🛰�?/div>
+                <div class="trop-sat1">🛰️</div>
+                <div class="trop-sat2">🛰️</div>
                 <div class="trop-ray1"></div>
                 <div class="trop-ray2"></div>
                 <div class="trop-troposphere"></div>
@@ -69,7 +70,7 @@
 
               <!-- Ionosphere -->
               <template v-if="c.id === 'ionosphere'">
-                <div class="iono-sat">🛰�?/div>
+                <div class="iono-sat">🛰️</div>
                 <div class="iono-beam"></div>
                 <div class="iono-shell-outer"></div>
                 <div class="iono-shell-inner"></div>
@@ -114,7 +115,7 @@
             <span class="card-tag">{{ caseTags[c.id] }}</span>
           </div>
 
-          <div class="card-arrow">�?/div>
+          <div class="card-arrow">→</div>
         </div>
       </div>
     </section>
@@ -132,8 +133,8 @@
         <div class="fork-icon-badge">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v1a2 2 0 01-2 2H8a2 2 0 01-2-2V9"/><path d="M12 12v3"/></svg>
         </div>
-        <h2 class="fork-title">可分叉架�?/h2>
-        <p class="fork-subtitle">Fork 仓库，新建一�?Python 文件，实�?5 个方法，你的自定义平差案例即刻上�?/p>
+        <h2 class="fork-title">可分叉架构</h2>
+        <p class="fork-subtitle">Fork 仓库，新建一个 Python 文件，实现 5 个方法，你的自定义平差案例即刻上线</p>
       </div>
 
       <!-- Flow Pipeline -->
@@ -142,17 +143,17 @@
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3"/><circle cx="12" cy="10" r="3"/><circle cx="12" cy="12" r="9"/><path d="M12 1v3M12 20v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M1 12h3M20 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg></div>
           <span class="flow-label">git clone</span>
         </div>
-        <div class="flow-arrow" style="animation-delay: 0s">�?/div>
+        <div class="flow-arrow" style="animation-delay: 0s">→</div>
         <div class="flow-step">
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13.87A4 4 0 017 6a4 4 0 015 3.87M6 13.87A3.99 3.99 0 019 18M6 13.87a3.99 3.99 0 003 4.13M15 13.87A4 4 0 0017 6a4 4 0 00-5 3.87M15 13.87A3.99 3.99 0 0113 18a3.99 3.99 0 01-3-4.13M15 13.87a3.99 3.99 0 01-3 4.13"/></svg></div>
           <span class="flow-label">新建 Pipeline</span>
         </div>
-        <div class="flow-arrow" style="animation-delay: 0.5s">�?/div>
+        <div class="flow-arrow" style="animation-delay: 0.5s">→</div>
         <div class="flow-step">
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
           <span class="flow-label">注册上线</span>
         </div>
-        <div class="flow-arrow" style="animation-delay: 1s">�?/div>
+        <div class="flow-arrow" style="animation-delay: 1s">→</div>
         <div class="flow-step">
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
           <span class="flow-label">前端自动适配</span>
@@ -193,7 +194,7 @@
           <span class="fork-code-dot dot-red"></span>
           <span class="fork-code-dot dot-yellow"></span>
           <span class="fork-code-dot dot-green"></span>
-          <span class="fork-code-label">my_pipeline.py <span class="typing-cursor">�?/span></span>
+          <span class="fork-code-label">my_pipeline.py <span class="typing-cursor">▌</span></span>
         </div>
         <pre class="fork-code"><code ref="codeRef" class="code-typing"></code></pre>
       </div>
@@ -204,14 +205,15 @@
           Fork on GitHub
         </a>
         <a class="fork-cta-btn secondary" href="https://github.com/PatrickLee726/geomind/blob/master/CONTRIBUTING.md" target="_blank">
-          贡献指南 �?        </a>
+          贡献指南 →
+        </a>
       </div>
     </section>
 
     <!-- ====== Footer ====== -->
     <footer class="site-footer">
       <div class="footer-left">
-        <span class="footer-brand">测智�?GeoMind</span>
+        <span class="footer-brand">测智云 GeoMind</span>
         <span class="footer-version">v0.1.0</span>
       </div>
       <div class="footer-right">
@@ -281,8 +283,7 @@ onMounted(() => {
 
   function draw(ts) {
     if (!active) return
-    // 限帧 30fps
-    if (draw._last && ts - draw._last < 33) { heroAnimId = requestAnimationFrame(draw); return }
+    if (draw._last && ts - draw._last < 33) { requestAnimationFrame(draw); return }
     draw._last = ts
     ctx.clearRect(0, 0, w, h)
 
@@ -362,7 +363,7 @@ onMounted(() => {
           ctx.beginPath()
           ctx.moveTo(p.x, p.y)
           ctx.lineTo(p2.x, p2.y)
-          ctx.strokeStyle = `rgba(147,197,253,${0.08 * (1 - dist / 100)})`
+          ctx.strokeStyle = `rgba(147,197,253,${0.08 * (1 - dist / 50)})`
           ctx.lineWidth = 0.5
           ctx.stroke()
         }
@@ -381,25 +382,26 @@ const caseTags = {
   troposphere: '天顶延迟预测',
   ionosphere: '全球 VTEC 建模',
   elevation: '高程异常拟合',
-  gnss: '基线网平�?,
+  gnss: '基线网平差',
 }
 
 const forkItems = [
   { method: 'case_id', desc: '案例唯一标识，注册后自动出现在前端列表中' },
-  { method: 'case_name', desc: '案例名称，显示在卡片标题�? },
-  { method: 'description', desc: '案例简介，向用户说明你的平差场�? },
-  { method: 'config_schema()', desc: '返回 JSON Schema，前端自动渲染参数配置表�? },
+  { method: 'case_name', desc: '案例名称，显示在卡片标题中' },
+  { method: 'description', desc: '案例简介，向用户说明你的平差场景' },
+  { method: 'config_schema()', desc: '返回 JSON Schema，前端自动渲染参数配置表单' },
   { method: 'run(data_source, params, progress)', desc: '编写经典 / ML 双路线逻辑，返回统一 PipelineResult' },
 ]
 
-// 代码打字�?const codeRef = ref(null)
+// 代码打字机
+const codeRef = ref(null)
 const codeStarted = ref(false)
 const forkCanvas = ref(null)
 const forkSection = ref(null)
 
 const codeSource = `<span class="line-num"> 1</span>  <span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
 <span class="line-num"> 2</span>      case_id = <span class="str">"my_case"</span>
-<span class="line-num"> 3</span>      case_name = <span class="str">"我的自定义案�?</span>
+<span class="line-num"> 3</span>      case_name = <span class="str">"我的自定义案例"</span>
 <span class="line-num"> 4</span>      description = <span class="str">"描述你的平差场景"</span>
 <span class="line-num"> 5</span>
 <span class="line-num"> 6</span>      <span class="kw">def</span> <span class="fn">config_schema</span>(<span class="kw">self</span>):
@@ -481,9 +483,9 @@ onMounted(() => {
       for (let j=i+1;j<fParticles.length;j++) {
         const p1=fParticles[i],p2=fParticles[j]
         const d=Math.hypot(p1.x-p2.x,p1.y-p2.y)
-        if (d<70) {
+        if (d<40) {
           fctx.beginPath(); fctx.moveTo(p1.x,p1.y); fctx.lineTo(p2.x,p2.y)
-          fctx.strokeStyle=`rgba(96,165,250,${0.04*(1-d/70)})`
+          fctx.strokeStyle=`rgba(96,165,250,${0.04*(1-d/40)})`
           fctx.lineWidth=0.4; fctx.stroke()
         }
       }
@@ -498,10 +500,10 @@ onMounted(async () => {
     const res = await api.getCases()
     cases.value = res.data.cases || []
     if (cases.value.length === 0) {
-      errorMsg.value = '后端返回了空案例列表，可能后端未注册任何案例�?
+      errorMsg.value = '后端返回了空案例列表，可能后端未注册任何案例。'
     }
   } catch (e) {
-    errorMsg.value = e.message || '请求失败，请检查后端服务是否已启动�?
+    errorMsg.value = e.message || '请求失败，请检查后端服务是否已启动。'
     console.error('加载案例失败:', e)
   } finally {
     loading.value = false

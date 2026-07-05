@@ -143,17 +143,17 @@
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3"/><circle cx="12" cy="10" r="3"/><circle cx="12" cy="12" r="9"/><path d="M12 1v3M12 20v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M1 12h3M20 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg></div>
           <span class="flow-label">git clone</span>
         </div>
-        <div class="flow-arrow">→</div>
+        <div class="flow-arrow" style="animation-delay: 0s">→</div>
         <div class="flow-step">
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13.87A4 4 0 017 6a4 4 0 015 3.87M6 13.87A3.99 3.99 0 019 18M6 13.87a3.99 3.99 0 003 4.13M15 13.87A4 4 0 0017 6a4 4 0 00-5 3.87M15 13.87A3.99 3.99 0 0113 18a3.99 3.99 0 01-3-4.13M15 13.87a3.99 3.99 0 01-3 4.13"/></svg></div>
           <span class="flow-label">新建 Pipeline</span>
         </div>
-        <div class="flow-arrow">→</div>
+        <div class="flow-arrow" style="animation-delay: 0.5s">→</div>
         <div class="flow-step">
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
           <span class="flow-label">注册上线</span>
         </div>
-        <div class="flow-arrow">→</div>
+        <div class="flow-arrow" style="animation-delay: 1s">→</div>
         <div class="flow-step">
           <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
           <span class="flow-label">前端自动适配</span>
@@ -194,20 +194,9 @@
           <span class="fork-code-dot dot-red"></span>
           <span class="fork-code-dot dot-yellow"></span>
           <span class="fork-code-dot dot-green"></span>
-          <span class="fork-code-label">my_pipeline.py</span>
+          <span class="fork-code-label">my_pipeline.py <span class="typing-cursor">▌</span></span>
         </div>
-        <pre class="fork-code"><code><span class="line-num"> 1</span>  <span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
-<span class="line-num"> 2</span>      case_id = <span class="str">"my_case"</span>
-<span class="line-num"> 3</span>      case_name = <span class="str">"我的自定义案例"</span>
-<span class="line-num"> 4</span>      description = <span class="str">"描述你的平差场景"</span>
-<span class="line-num"> 5</span>
-<span class="line-num"> 6</span>      <span class="kw">def</span> <span class="fn">config_schema</span>(<span class="kw">self</span>):
-<span class="line-num"> 7</span>          <span class="kw">return</span> {<span class="str">"type"</span>: <span class="str">"object"</span>, <span class="str">"properties"</span>: {...}}
-<span class="line-num"> 8</span>
-<span class="line-num"> 9</span>      <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>, data_source, params, progress):
-<span class="line-num">10</span>          classic = <span class="kw">self</span>.<span class="fn">_run_classic</span>(data_source, params)
-<span class="line-num">11</span>          ml = <span class="kw">self</span>.<span class="fn">_run_ml</span>(data_source, params)
-<span class="line-num">12</span>          <span class="kw">return</span> <span class="cls">PipelineResult</span>(classic, ml)</code></pre>
+        <pre class="fork-code"><code ref="codeRef" class="code-typing"></code></pre>
       </div>
 
       <div class="fork-cta-row">
@@ -396,6 +385,51 @@ const forkItems = [
   { method: 'config_schema()', desc: '返回 JSON Schema，前端自动渲染参数配置表单' },
   { method: 'run(data_source, params, progress)', desc: '编写经典 / ML 双路线逻辑，返回统一 PipelineResult' },
 ]
+
+// 代码打字机
+const codeRef = ref(null)
+const codeStarted = ref(false)
+
+const codeSource = `<span class="line-num"> 1</span>  <span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
+<span class="line-num"> 2</span>      case_id = <span class="str">"my_case"</span>
+<span class="line-num"> 3</span>      case_name = <span class="str">"我的自定义案例"</span>
+<span class="line-num"> 4</span>      description = <span class="str">"描述你的平差场景"</span>
+<span class="line-num"> 5</span>
+<span class="line-num"> 6</span>      <span class="kw">def</span> <span class="fn">config_schema</span>(<span class="kw">self</span>):
+<span class="line-num"> 7</span>          <span class="kw">return</span> {<span class="str">"type"</span>: <span class="str">"object"</span>, <span class="str">"properties"</span>: {...}}
+<span class="line-num"> 8</span>
+<span class="line-num"> 9</span>      <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>, data_source, params, progress):
+<span class="line-num">10</span>          classic = <span class="kw">self</span>.<span class="fn">_run_classic</span>(data_source, params)
+<span class="line-num">11</span>          ml = <span class="kw">self</span>.<span class="fn">_run_ml</span>(data_source, params)
+<span class="line-num">12</span>          <span class="kw">return</span> <span class="cls">PipelineResult</span>(classic, ml)`
+
+function startTyping() {
+  if (codeStarted.value || !codeRef.value) return
+  codeStarted.value = true
+  let i = 0
+  const el = codeRef.value
+  el.innerHTML = ''
+  function type() {
+    if (i < codeSource.length) {
+      el.innerHTML += codeSource.slice(i, i + 4)
+      i += 4
+      setTimeout(type, 6)
+    }
+  }
+  type()
+}
+
+onMounted(() => {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { startTyping(); observer.disconnect() }
+  }, { threshold: 0.3 })
+  setTimeout(() => {
+    const el = document.querySelector('.fork-section')
+    if (el) observer.observe(el)
+  }, 500)
+  // Fallback
+  setTimeout(() => { if (!codeStarted.value) startTyping() }, 4000)
+})
 
 onMounted(async () => {
   try {
@@ -1098,7 +1132,28 @@ function scrollToCases() {
   padding: 60px 40px 50px;
   background: linear-gradient(170deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   overflow: hidden;
-  animation: fadeInUp 0.5s 0.4s ease-out both;
+  animation: fadeInUp 0.5s 0.4s ease-out both, bgShift 8s ease-in-out infinite;
+}
+@keyframes bgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.fork-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(37,99,235,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(59,130,246,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  animation: bgOrb 10s ease-in-out infinite;
+}
+@keyframes bgOrb {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(2%, -1%); }
+  66% { transform: translate(-1%, 2%); }
 }
 
 /* 背景粒子 */
@@ -1204,6 +1259,11 @@ function scrollToCases() {
   font-weight: 400;
   padding: 0 4px;
   margin-bottom: 16px;
+  animation: arrowPulse 2s ease-in-out infinite;
+}
+@keyframes arrowPulse {
+  0%, 100% { color: #475569; transform: scale(1); }
+  50% { color: #3b82f6; transform: scale(1.15); }
 }
 
 /* 5 Interface Cards - 3+2 Layout */
@@ -1337,6 +1397,14 @@ function scrollToCases() {
   font-size: 12px;
   color: #64748b;
   font-weight: 400;
+}
+.typing-cursor {
+  color: #3b82f6;
+  animation: cursorBlink 0.8s step-end infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 .fork-code {
   padding: 22px 24px;

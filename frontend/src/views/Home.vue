@@ -8,9 +8,13 @@
           <span class="title-sub">开源可分叉的 AI 平差计算引擎</span>
         </h1>
         <p class="hero-desc">
-          四大 GNSS 平差场景 × 双技术路线对比<br>
-          经典方法 vs 机器学习，直观感受精度跃升
+          将机器学习引入测绘平差的精度引擎<br>
+          代码开源 · 架构可分叉 · 精度提升最高 65%
         </p>
+        <a class="hero-github" href="https://github.com/PatrickLee726/geomind" target="_blank" title="Star us on GitHub">
+          <svg class="github-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="github-text">GitHub</span>
+        </a>
         <button class="hero-cta" @click="scrollToCases">
           <span>进入实验</span>
           <span class="cta-arrow">↓</span>
@@ -31,8 +35,8 @@
 
     <!-- ====== 案例选择 ====== -->
     <section class="cases-section" id="cases-anchor">
-      <h2 class="section-title">选择实验案例</h2>
-      <p class="section-subtitle">点击卡片进入对应实验，配置参数后运行对比</p>
+      <h2 class="section-title">四大平差场景</h2>
+      <p class="section-subtitle">每个场景内置经典方法与 ML 双路线，点击卡片进入</p>
 
       <div class="case-grid">
         <div
@@ -111,6 +115,62 @@
       </div>
     </section>
 
+    <!-- ====== Forkable Developer Section ====== -->
+    <section class="fork-section">
+      <h2 class="section-title">可分叉架构 · 5 个接口接入</h2>
+      <p class="section-subtitle">新增一个平差场景只需实现 5 个方法，前端自动适配</p>
+
+      <div class="fork-grid">
+        <div class="fork-card" v-for="(item, idx) in forkItems" :key="idx">
+          <div class="fork-num">{{ idx + 1 }}</div>
+          <div class="fork-info">
+            <code class="fork-method">{{ item.method }}</code>
+            <p class="fork-desc">{{ item.desc }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fork-code-block">
+        <div class="fork-code-header">
+          <span class="fork-code-dot dot-red"></span>
+          <span class="fork-code-dot dot-yellow"></span>
+          <span class="fork-code-dot dot-green"></span>
+          <span class="fork-code-label">my_pipeline.py — Fork 后新建的 Pipeline 示例</span>
+        </div>
+        <pre class="fork-code"><code><span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
+    case_id = <span class="str">"my_case"</span>
+    case_name = <span class="str">"我的自定义案例"</span>
+    description = <span class="str">"..."</span>
+
+    <span class="kw">def</span> <span class="fn">config_schema</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> {<span class="str">"type"</span>: <span class="str">"object"</span>, ...}
+
+    <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>, data_source, params, progress):
+        classic_result = <span class="kw">self</span>.<span class="fn">_run_classic</span>(data_source, params)
+        ml_result = <span class="kw">self</span>.<span class="fn">_run_ml</span>(data_source, params)
+        <span class="kw">return</span> <span class="cls">PipelineResult</span>(...)</code></pre>
+      </div>
+
+      <p class="fork-footer-text">
+        <a href="https://github.com/PatrickLee726/geomind" target="_blank">Fork on GitHub →</a>
+      </p>
+    </section>
+
+    <!-- ====== Footer ====== -->
+    <footer class="site-footer">
+      <div class="footer-left">
+        <span class="footer-brand">测智云 GeoMind</span>
+        <span class="footer-version">v0.1.0</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/PatrickLee726/geomind/blob/master/LICENSE" target="_blank">MIT License</a>
+        <span class="footer-divider">·</span>
+        <a href="https://github.com/PatrickLee726/geomind" target="_blank">GitHub</a>
+        <span class="footer-divider">·</span>
+        <a href="https://github.com/PatrickLee726/geomind/blob/master/CONTRIBUTING.md" target="_blank">贡献指南</a>
+      </div>
+    </footer>
+
     <!-- Loading / Error -->
     <div v-if="loading" class="loading-state">
       <div class="spinner"><div class="spinner-dot"></div></div>
@@ -143,6 +203,14 @@ const caseTags = {
   elevation: '高程异常拟合',
   gnss: '基线网平差',
 }
+
+const forkItems = [
+  { method: 'case_id', desc: '案例唯一标识，注册后自动出现在前端列表中' },
+  { method: 'case_name', desc: '案例名称，显示在卡片标题中' },
+  { method: 'description', desc: '案例简介，向用户说明你的平差场景' },
+  { method: 'config_schema()', desc: '返回 JSON Schema，前端自动渲染参数配置表单' },
+  { method: 'run(data_source, params, progress)', desc: '编写经典 / ML 双路线逻辑，返回统一 PipelineResult' },
+]
 
 onMounted(async () => {
   try {
@@ -768,5 +836,194 @@ function scrollToCases() {
   border-radius: 4px;
   font-size: 12px;
   color: #2d3748;
+}
+
+/* ========== Hero GitHub Link ========== */
+.hero-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 8px 20px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  color: #a3bffa;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: all 0.3s ease;
+}
+.hero-github:hover {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border-color: rgba(255,255,255,0.25);
+}
+.github-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========== Fork Section ========== */
+.fork-section {
+  padding: 48px 8px 40px;
+  border-top: 1px solid #e8ecf1;
+  animation: fadeInUp 0.5s 0.4s ease-out both;
+}
+.fork-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+.fork-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.fork-card:hover {
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border-color: #c3dafe;
+}
+.fork-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #3182ce, #2c5282);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fork-info {
+  min-width: 0;
+}
+.fork-method {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
+  padding: 2px 8px;
+  background: #edf2f7;
+  border-radius: 4px;
+  word-break: break-all;
+}
+.fork-desc {
+  font-size: 12px;
+  color: #718096;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ========== Code Block ========== */
+.fork-code-block {
+  max-width: 560px;
+  margin: 32px auto 0;
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+.fork-code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #334155;
+}
+.fork-code-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot-red { background: #ef4444; }
+.dot-yellow { background: #f59e0b; }
+.dot-green { background: #22c55e; }
+.fork-code-label {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+.fork-code {
+  padding: 20px 24px;
+  margin: 0;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+.fork-code .kw { color: #c084fc; }
+.fork-code .cls { color: #67e8f9; }
+.fork-code .str { color: #86efac; }
+.fork-code .fn { color: #fde68a; }
+
+.fork-footer-text {
+  text-align: center;
+  margin-top: 24px;
+}
+.fork-footer-text a {
+  color: #3182ce;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+.fork-footer-text a:hover { color: #1e3a8a; }
+
+/* ========== Footer ========== */
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 24px 16px;
+  margin-top: 40px;
+  border-top: 1px solid #e8ecf1;
+}
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-brand {
+  font-weight: 700;
+  color: #1a365d;
+  font-size: 14px;
+}
+.footer-version {
+  font-size: 12px;
+  color: #a0aec0;
+  background: #edf2f7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-right a {
+  font-size: 13px;
+  color: #718096;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-right a:hover { color: #3182ce; }
+.footer-divider {
+  color: #cbd5e0;
+  font-size: 13px;
 }
 </style>

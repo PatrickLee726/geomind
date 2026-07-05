@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .api import cases, data, jobs, results, benchmark, sweep
 from .core.registry import register
+from .services.hot_reload import start_watcher
 from .pipelines.troposphere import TropospherePipeline
 from .pipelines.gnss_network import GNSSNetworkPipeline
 from .pipelines.ionosphere import IonospherePipeline
@@ -17,6 +18,9 @@ register(GNSSNetworkPipeline())
 register(TropospherePipeline())
 register(IonospherePipeline())
 register(ElevationPipeline())
+
+# 启动 Pipeline 热加载监视器（每3秒扫描新文件）
+start_watcher(interval=3.0)
 
 app = FastAPI(
     title="测智云 GeoMind",

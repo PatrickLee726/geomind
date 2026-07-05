@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 import os
+import time
 
 router = APIRouter(prefix="/api/benchmark", tags=["benchmark"])
 
@@ -92,3 +93,35 @@ async def download_report():
     if not os.path.exists(pdf_path):
         return {"error": "报告文件尚未生成，请先运行 gen_report.py"}, 404
     return FileResponse(pdf_path, media_type="application/pdf", filename="GeoMind_Benchmark_Report.pdf")
+
+
+@router.get("/models")
+async def list_models():
+    """列出所有已缓存的模型"""
+    from ..core.base import Pipeline
+    cache_dir = Pipeline._MODEL_CACHE_DIR
+    if not cache_dir.exists():
+        return {"models": []}
+    models = []
+    for f in sorted(cache_dir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
+        if f.suffix in ('.pt', '.pkl'):
+            parts = f.stem.split('_', 1)
+            models.append({
+                "filename": f.name,
+                "case_id": parts[0] if parts else "unknown",
+                "size_kb": round(f.stat().st_size / 1024, 1),
+                "modified": time.strftime('%Y-%m-%d %H:%M', time.localtime(f.stat().st_mtime)),
+            })
+    return {"models": models[:20]}
+
+
+@router.get("/models/{filename}")
+async def download_model(filename: str):
+    """下载指定模型文件"""
+    from ..core.base import Pipeline
+    cache_dir = Pipeline._MODEL_CACHE_DIR
+    filepath = cache_dir / filename
+    if not filepath.exists():
+        return {"error": "模型不存在"}, 404
+    return FileResponse(str(filepath), media_type="application/octet-stream", filename=filename)
+

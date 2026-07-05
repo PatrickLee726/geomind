@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .api import cases, data, jobs, results
+from .api import cases, data, jobs, results, benchmark
 from .core.registry import register
 from .pipelines.troposphere import TropospherePipeline
 from .pipelines.gnss_network import GNSSNetworkPipeline
@@ -19,8 +19,8 @@ register(IonospherePipeline())
 register(ElevationPipeline())
 
 app = FastAPI(
-    title="AI平差平台",
-    description="当经典平差遇见人工智能 —— 教学演示平台",
+    title="测智云 GeoMind",
+    description="开源可分叉的 AI 平差计算引擎",
     version="0.1.0",
 )
 
@@ -38,6 +38,7 @@ app.include_router(cases.router)
 app.include_router(data.router)
 app.include_router(jobs.router)
 app.include_router(results.router)
+app.include_router(benchmark.router)
 
 
 @app.get("/api/health")

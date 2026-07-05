@@ -161,6 +161,9 @@
       <!-- 参数配置（动态渲染） -->
       <section class="section">
         <h2>{{ isSimulation ? '1' : '2' }}. 配置参数</h2>
+        <button class="btn-demo" @click="fillDemoConfig" title="一键填充推荐参数">
+          ⚡ 使用示例数据
+        </button>
         <div class="config-grid">
           <label v-for="(prop, key) in schemaProps" :key="key" class="field" :title="prop.description || ''">
             {{ prop.title || key }}：
@@ -274,6 +277,23 @@ const canSubmit = computed(() => {
   if (caseId === 'ionosphere' && ionoSource.value === 'default') return true
   return !!dataProfile.value
 })
+
+const demoConfigs = {
+  troposphere: { hidden_layers: '128,256,128,64', epochs: 150, learning_rate: 0.001, dropout: 0.2, batch_size: 64 },
+  ionosphere: { hidden_layers: '256,512,256,128', epochs: 300, learning_rate: 0.001, dropout: 0.2, batch_size: 128 },
+  gnss: { n_stations: 8, n_groups: 100, outlier_rate: 0.15, noise_std: 2.0, hidden_layers: '64,64', epochs: 200, learning_rate: 0.001 },
+  elevation: { scenario: 'B', noise: 0.05, test_ratio: 0.2, hidden_layers: '64,128,64', epochs: 500, learning_rate: 0.001, dropout: 0.2 },
+}
+
+function fillDemoConfig() {
+  const demo = demoConfigs[caseId]
+  if (!demo) return
+  for (const [key, val] of Object.entries(demo)) {
+    if (key in config.value) {
+      config.value[key] = val
+    }
+  }
+}
 
 onMounted(async () => {
   try {
@@ -522,6 +542,26 @@ h1 { font-size: 28px; color: #1a365d; margin-bottom: 4px; }
   color: #fff; 
 }
 .btn.primary:hover:not(:disabled) { box-shadow: 0 4px 16px rgba(49, 130, 206, 0.35); transform: translateY(-2px); }
+
+.btn-demo {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  margin: 4px 0 16px;
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.06);
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.btn-demo:hover {
+  background: rgba(59,130,246,0.12);
+  border-color: #2563eb;
+  border-style: solid;
+}
 
 .data-info { 
   margin-top: 12px; padding: 10px 14px; background: #f0fff4; border-radius: 8px; font-size: 13px; color: #276749;

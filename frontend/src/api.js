@@ -6,6 +6,9 @@ const api = axios.create({
 })
 
 export default {
+  // 通用
+  get: (path) => api.get(path),
+
   // 案例
   getCases: () => api.get('/cases'),
   getCase: (id) => api.get(`/cases/${id}`),

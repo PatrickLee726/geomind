@@ -15,13 +15,19 @@
           <svg class="github-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           <span class="github-text">GitHub</span>
         </a>
-        <button class="hero-cta" @click="scrollToCases">
-          <span>进入实验</span>
-          <span class="cta-arrow">↓</span>
-        </button>
+        <div class="hero-actions">
+          <router-link to="/benchmark" class="hero-bench-btn">
+            ⚡ 一键跑分
+          </router-link>
+          <button class="hero-cta" @click="scrollToCases">
+            <span>进入实验</span>
+            <span class="cta-arrow">↓</span>
+          </button>
+        </div>
       </div>
 
-      <!-- 背景装饰：卫星轨道 -->
+      <!-- 背景装饰：粒子网络 + 卫星轨道 -->
+      <canvas ref="heroCanvas" class="hero-canvas"></canvas>
       <div class="hero-decoration">
         <div class="orbit-ring ring-1"></div>
         <div class="orbit-ring ring-2"></div>
@@ -252,6 +258,73 @@ import { useRouter } from 'vue-router'
 import api from '../api.js'
 
 const router = useRouter()
+
+// Hero Canvas 粒子网络
+const heroCanvas = ref(null)
+
+onMounted(() => {
+  const canvas = heroCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  let w, h
+  const particles = []
+  const PARTICLE_COUNT = 60
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect()
+    w = canvas.width = rect.width
+    h = canvas.height = rect.height
+  }
+  resize()
+  window.addEventListener('resize', resize)
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 2 + 1,
+    })
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h)
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i]
+      p.x += p.vx
+      p.y += p.vy
+      if (p.x < 0) p.x = w
+      if (p.x > w) p.x = 0
+      if (p.y < 0) p.y = h
+      if (p.y > h) p.y = 0
+
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(147,197,253,0.4)'
+      ctx.fill()
+
+      // Connect nearby particles
+      for (let j = i + 1; j < particles.length; j++) {
+        const p2 = particles[j]
+        const dx = p.x - p2.x
+        const dy = p.y - p2.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < 100) {
+          ctx.beginPath()
+          ctx.moveTo(p.x, p.y)
+          ctx.lineTo(p2.x, p2.y)
+          ctx.strokeStyle = `rgba(147,197,253,${0.08 * (1 - dist / 100)})`
+          ctx.lineWidth = 0.5
+          ctx.stroke()
+        }
+      }
+    }
+    requestAnimationFrame(draw)
+  }
+  draw()
+})
+
 const cases = ref([])
 const loading = ref(true)
 const errorMsg = ref('')
@@ -310,10 +383,16 @@ function scrollToCases() {
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 40%, #3b82f6 100%);
   animation: fadeInUp 0.6s ease-out;
 }
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
 
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -389,11 +468,42 @@ function scrollToCases() {
   transform: translateY(3px);
 }
 
+/* Hero action buttons row */
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+.hero-bench-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 28px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(245,158,11,0.35);
+  transition: all 0.3s ease;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+.hero-bench-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(245,158,11,0.5);
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(245,158,11,0.35); }
+  50% { box-shadow: 0 4px 32px rgba(245,158,11,0.55); }
+}
+
 /* ========== Hero Decoration ========== */
 .hero-decoration {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 }
 .orbit-ring {

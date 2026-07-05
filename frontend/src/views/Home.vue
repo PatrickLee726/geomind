@@ -4,8 +4,8 @@
     <section class="hero-full">
       <div class="hero-content">
         <h1 class="hero-title">
-          <span class="title-main">AI 平差平台</span>
-          <span class="title-sub">当经典平差遇见人工智能</span>
+          <span class="title-main">测智云 GeoMind</span>
+          <span class="title-sub">开源可分叉的 AI 平差计算引擎</span>
         </h1>
         <p class="hero-desc">
           四大 GNSS 平差场景 × 双技术路线对比<br>

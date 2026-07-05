@@ -9,8 +9,8 @@
     </header>
 
     <!-- 全局任务悬浮面板 -->
-    <div class="task-panel" v-if="totalJobs > 0" @click="showPanel = !showPanel">
-      <div class="task-panel-trigger">
+    <div class="task-panel" v-if="totalJobs > 0">
+      <div class="task-panel-trigger" @click.stop="showPanel = !showPanel">
         <span class="task-dot running" v-if="runningCount > 0"></span>
         <span class="task-count">{{ runningCount > 0 ? runningCount + ' 运行中' : '' }}</span>
         <span class="task-divider" v-if="runningCount > 0 && doneCount > 0">|</span>
@@ -95,12 +95,19 @@ function pollStatus() {
 onMounted(() => {
   loadJobs()
   window.addEventListener('geomind:job-created', loadJobs)
-  window.addEventListener('click', () => { showPanel.value = false })
   pollTimer = setInterval(pollStatus, 5000)
 })
 
+function handleClickOutside(e) {
+  if (showPanel.value && !e.target.closest('.task-panel')) {
+    showPanel.value = false
+  }
+}
+window.addEventListener('click', handleClickOutside)
+
 onUnmounted(() => {
   clearInterval(pollTimer)
+  window.removeEventListener('click', handleClickOutside)
 })
 </script>
 

@@ -154,16 +154,30 @@
         </div>
       </div>
 
-      <!-- 5 Interface Cards -->
-      <div class="fork-grid">
-        <div class="fork-card" v-for="(item, idx) in forkItems" :key="idx">
-          <div class="fork-card-glow"></div>
-          <div class="fork-num-ring">
-            <span class="fork-num">{{ idx + 1 }}</span>
+      <!-- 5 Interface Cards: 3+2 layout -->
+      <div class="fork-grid-wrapper">
+        <div class="fork-grid-row">
+          <div class="fork-card" v-for="(item, idx) in forkItems.slice(0, 3)" :key="item.method">
+            <div class="fork-card-glow"></div>
+            <div class="fork-num-ring">
+              <span class="fork-num">{{ idx + 1 }}</span>
+            </div>
+            <div class="fork-info">
+              <code class="fork-method">{{ item.method }}</code>
+              <p class="fork-desc">{{ item.desc }}</p>
+            </div>
           </div>
-          <div class="fork-info">
-            <code class="fork-method">{{ item.method }}</code>
-            <p class="fork-desc">{{ item.desc }}</p>
+        </div>
+        <div class="fork-grid-row row-bottom">
+          <div class="fork-card" v-for="(item, idx) in forkItems.slice(3, 5)" :key="item.method">
+            <div class="fork-card-glow"></div>
+            <div class="fork-num-ring">
+              <span class="fork-num">{{ idx + 4 }}</span>
+            </div>
+            <div class="fork-info">
+              <code class="fork-method">{{ item.method }}</code>
+              <p class="fork-desc">{{ item.desc }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1024,15 +1038,24 @@ function scrollToCases() {
   margin-bottom: 16px;
 }
 
-/* 5 Interface Cards */
-.fork-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
+/* 5 Interface Cards - 3+2 Layout */
+.fork-grid-wrapper {
+  max-width: 840px;
   margin: 0 auto 40px;
-  max-width: 1000px;
   position: relative;
   z-index: 1;
+}
+.fork-grid-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+.fork-grid-row.row-bottom {
+  margin-top: 14px;
+}
+.fork-grid-row .fork-card {
+  flex: 0 0 240px;
+  max-width: 260px;
 }
 .fork-card {
   position: relative;

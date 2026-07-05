@@ -117,12 +117,50 @@
 
     <!-- ====== Forkable Developer Section ====== -->
     <section class="fork-section">
-      <h2 class="section-title">可分叉架构 · 5 个接口接入</h2>
-      <p class="section-subtitle">新增一个平差场景只需实现 5 个方法，前端自动适配</p>
+      <div class="fork-bg-dots">
+        <span class="dot-item" v-for="n in 20" :key="n"
+          :style="{ left: (n*47)%100 + '%', top: (n*31)%100 + '%', animationDelay: (n*0.15)+'s' }"
+        ></span>
+      </div>
 
+      <div class="fork-header">
+        <div class="fork-icon-badge">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v1a2 2 0 01-2 2H8a2 2 0 01-2-2V9"/><path d="M12 12v3"/></svg>
+        </div>
+        <h2 class="fork-title">可分叉架构</h2>
+        <p class="fork-subtitle">Fork 仓库，新建一个 Python 文件，实现 5 个方法，你的自定义平差案例即刻上线</p>
+      </div>
+
+      <!-- Flow Pipeline -->
+      <div class="fork-flow">
+        <div class="flow-step">
+          <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3"/><circle cx="12" cy="10" r="3"/><circle cx="12" cy="12" r="9"/><path d="M12 1v3M12 20v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M1 12h3M20 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg></div>
+          <span class="flow-label">git clone</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13.87A4 4 0 017 6a4 4 0 015 3.87M6 13.87A3.99 3.99 0 019 18M6 13.87a3.99 3.99 0 003 4.13M15 13.87A4 4 0 0017 6a4 4 0 00-5 3.87M15 13.87A3.99 3.99 0 0113 18a3.99 3.99 0 01-3-4.13M15 13.87a3.99 3.99 0 01-3 4.13"/></svg></div>
+          <span class="flow-label">新建 Pipeline</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <span class="flow-label">注册上线</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+          <span class="flow-label">前端自动适配</span>
+        </div>
+      </div>
+
+      <!-- 5 Interface Cards -->
       <div class="fork-grid">
         <div class="fork-card" v-for="(item, idx) in forkItems" :key="idx">
-          <div class="fork-num">{{ idx + 1 }}</div>
+          <div class="fork-card-glow"></div>
+          <div class="fork-num-ring">
+            <span class="fork-num">{{ idx + 1 }}</span>
+          </div>
           <div class="fork-info">
             <code class="fork-method">{{ item.method }}</code>
             <p class="fork-desc">{{ item.desc }}</p>
@@ -130,30 +168,37 @@
         </div>
       </div>
 
+      <!-- Code Block -->
       <div class="fork-code-block">
         <div class="fork-code-header">
           <span class="fork-code-dot dot-red"></span>
           <span class="fork-code-dot dot-yellow"></span>
           <span class="fork-code-dot dot-green"></span>
-          <span class="fork-code-label">my_pipeline.py — Fork 后新建的 Pipeline 示例</span>
+          <span class="fork-code-label">my_pipeline.py</span>
         </div>
-        <pre class="fork-code"><code><span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
-    case_id = <span class="str">"my_case"</span>
-    case_name = <span class="str">"我的自定义案例"</span>
-    description = <span class="str">"..."</span>
-
-    <span class="kw">def</span> <span class="fn">config_schema</span>(<span class="kw">self</span>):
-        <span class="kw">return</span> {<span class="str">"type"</span>: <span class="str">"object"</span>, ...}
-
-    <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>, data_source, params, progress):
-        classic_result = <span class="kw">self</span>.<span class="fn">_run_classic</span>(data_source, params)
-        ml_result = <span class="kw">self</span>.<span class="fn">_run_ml</span>(data_source, params)
-        <span class="kw">return</span> <span class="cls">PipelineResult</span>(...)</code></pre>
+        <pre class="fork-code"><code><span class="line-num"> 1</span>  <span class="kw">class</span> <span class="cls">MyPipeline</span>(<span class="cls">Pipeline</span>):
+<span class="line-num"> 2</span>      case_id = <span class="str">"my_case"</span>
+<span class="line-num"> 3</span>      case_name = <span class="str">"我的自定义案例"</span>
+<span class="line-num"> 4</span>      description = <span class="str">"描述你的平差场景"</span>
+<span class="line-num"> 5</span>
+<span class="line-num"> 6</span>      <span class="kw">def</span> <span class="fn">config_schema</span>(<span class="kw">self</span>):
+<span class="line-num"> 7</span>          <span class="kw">return</span> {<span class="str">"type"</span>: <span class="str">"object"</span>, <span class="str">"properties"</span>: {...}}
+<span class="line-num"> 8</span>
+<span class="line-num"> 9</span>      <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>, data_source, params, progress):
+<span class="line-num">10</span>          classic = <span class="kw">self</span>.<span class="fn">_run_classic</span>(data_source, params)
+<span class="line-num">11</span>          ml = <span class="kw">self</span>.<span class="fn">_run_ml</span>(data_source, params)
+<span class="line-num">12</span>          <span class="kw">return</span> <span class="cls">PipelineResult</span>(classic, ml)</code></pre>
       </div>
 
-      <p class="fork-footer-text">
-        <a href="https://github.com/PatrickLee726/geomind" target="_blank">Fork on GitHub →</a>
-      </p>
+      <div class="fork-cta-row">
+        <a class="fork-cta-btn" href="https://github.com/PatrickLee726/geomind" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Fork on GitHub
+        </a>
+        <a class="fork-cta-btn secondary" href="https://github.com/PatrickLee726/geomind/blob/master/CONTRIBUTING.md" target="_blank">
+          贡献指南 →
+        </a>
+      </div>
     </section>
 
     <!-- ====== Footer ====== -->
@@ -866,121 +911,304 @@ function scrollToCases() {
 
 /* ========== Fork Section ========== */
 .fork-section {
-  padding: 48px 8px 40px;
-  border-top: 1px solid #e8ecf1;
+  position: relative;
+  margin: 48px -20px 0;
+  padding: 60px 40px 50px;
+  background: linear-gradient(170deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  overflow: hidden;
   animation: fadeInUp 0.5s 0.4s ease-out both;
 }
-.fork-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin: 32px 0;
+
+/* 背景粒子 */
+.fork-bg-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
-.fork-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 18px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+.fork-bg-dots .dot-item {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(99,179,237,0.3);
+  animation: dotBlink 3s ease-in-out infinite;
 }
-.fork-card:hover {
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  border-color: #c3dafe;
+@keyframes dotBlink {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.6; }
 }
-.fork-num {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: linear-gradient(135deg, #3182ce, #2c5282);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
+
+/* 头部 */
+.fork-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+}
+.fork-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(99,179,237,0.2), rgba(99,179,237,0.05));
+  border: 1px solid rgba(99,179,237,0.2);
+  color: #63b3ed;
+  margin-bottom: 20px;
+}
+.fork-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+.fork-subtitle {
+  font-size: 15px;
+  color: #94a3b8;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Flow Pipeline */
+.fork-flow {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: 44px;
+  position: relative;
+  z-index: 1;
+}
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+.flow-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #334155, #1e293b);
+  border: 1px solid rgba(99,179,237,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #63b3ed;
+  transition: all 0.3s ease;
+}
+.flow-step:hover .flow-icon {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-color: #3b82f6;
+  color: #fff;
+  box-shadow: 0 0 24px rgba(37,99,235,0.3);
+  transform: translateY(-2px);
+}
+.flow-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.flow-arrow {
+  font-size: 24px;
+  color: #475569;
+  font-weight: 400;
+  padding: 0 4px;
+  margin-bottom: 16px;
+}
+
+/* 5 Interface Cards */
+.fork-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 0 auto 40px;
+  max-width: 1000px;
+  position: relative;
+  z-index: 1;
+}
+.fork-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 24px 16px 20px;
+  background: rgba(30,41,59,0.8);
+  border: 1px solid rgba(71,85,105,0.3);
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  overflow: hidden;
+}
+.fork-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(59,130,246,0.2);
+}
+.fork-card-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(59,130,246,0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.fork-card:hover .fork-card-glow {
+  opacity: 1;
+}
+.fork-num-ring {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(37,99,235,0.05));
+  border: 2px solid rgba(59,130,246,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s ease;
+}
+.fork-card:hover .fork-num-ring {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-color: #3b82f6;
+  box-shadow: 0 0 20px rgba(37,99,235,0.4);
+}
+.fork-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: #63b3ed;
+  transition: color 0.35s ease;
+}
+.fork-card:hover .fork-num {
+  color: #fff;
 }
 .fork-info {
   min-width: 0;
 }
 .fork-method {
-  display: block;
+  display: inline-block;
   font-size: 13px;
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 4px;
-  padding: 2px 8px;
-  background: #edf2f7;
-  border-radius: 4px;
-  word-break: break-all;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 6px;
+  padding: 3px 10px;
+  background: rgba(37,99,235,0.15);
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  letter-spacing: -0.3px;
 }
 .fork-desc {
   font-size: 12px;
-  color: #718096;
+  color: #94a3b8;
   line-height: 1.5;
   margin: 0;
 }
 
-/* ========== Code Block ========== */
+/* Code Block */
 .fork-code-block {
-  max-width: 560px;
-  margin: 32px auto 0;
-  background: #1e293b;
-  border-radius: 12px;
+  max-width: 580px;
+  margin: 0 auto;
+  background: #0b1120;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 0 0 1px rgba(71,85,105,0.4), 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 1;
 }
 .fork-code-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
-  background: #334155;
+  padding: 14px 18px;
+  background: #1a2236;
+  border-bottom: 1px solid rgba(71,85,105,0.3);
 }
 .fork-code-dot {
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
 }
 .dot-red { background: #ef4444; }
 .dot-yellow { background: #f59e0b; }
 .dot-green { background: #22c55e; }
 .fork-code-label {
-  margin-left: 8px;
+  margin-left: 10px;
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 400;
 }
 .fork-code {
-  padding: 20px 24px;
+  padding: 22px 24px;
   margin: 0;
   overflow-x: auto;
   font-size: 13px;
-  line-height: 1.8;
+  line-height: 1.85;
   color: #e2e8f0;
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: transparent;
+}
+.fork-code code {
+  background: transparent;
+}
+.fork-code .line-num {
+  color: #334155;
+  user-select: none;
+  margin-right: 12px;
 }
 .fork-code .kw { color: #c084fc; }
 .fork-code .cls { color: #67e8f9; }
 .fork-code .str { color: #86efac; }
 .fork-code .fn { color: #fde68a; }
 
-.fork-footer-text {
-  text-align: center;
-  margin-top: 24px;
+/* CTA Buttons */
+.fork-cta-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  position: relative;
+  z-index: 1;
 }
-.fork-footer-text a {
-  color: #3182ce;
+.fork-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.3);
 }
-.fork-footer-text a:hover { color: #1e3a8a; }
+.fork-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(37,99,235,0.45);
+}
+.fork-cta-btn.secondary {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(71,85,105,0.4);
+  box-shadow: none;
+}
+.fork-cta-btn.secondary:hover {
+  border-color: #3b82f6;
+  color: #fff;
+  box-shadow: none;
+}
 
 /* ========== Footer ========== */
 .site-footer {

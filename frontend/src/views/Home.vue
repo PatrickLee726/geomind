@@ -290,6 +290,59 @@ onMounted(() => {
 
   function draw() {
     ctx.clearRect(0, 0, w, h)
+
+    // === 3D 旋转线框地球 ===
+    const cx = w * 0.5, cy = h * 0.5
+    const globeR = Math.min(w, h) * 0.22
+    const t = Date.now() * 0.0003
+
+    function toSphere(lat, lon) {
+      const phi = (90 - lat) * Math.PI / 180
+      const theta = (lon + 90) * Math.PI / 180
+      const x = globeR * Math.sin(phi) * Math.cos(theta)
+      const y = -globeR * Math.cos(phi)
+      const z = globeR * Math.sin(phi) * Math.sin(theta)
+      const rx = x * Math.cos(t) - z * Math.sin(t)
+      const ry = y
+      const rz = x * Math.sin(t) + z * Math.cos(t)
+      return { sx: cx + rx, sy: cy + ry, z: rz }
+    }
+
+    // 经线
+    for (let lon = 0; lon < 360; lon += 30) {
+      ctx.beginPath(); let f = true
+      for (let lat = -90; lat <= 90; lat += 5) {
+        const p = toSphere(lat, lon)
+        if (p.z > 0) { if (f) { ctx.moveTo(p.sx, p.sy); f = false } else ctx.lineTo(p.sx, p.sy) } else { f = true }
+      }
+      ctx.strokeStyle = 'rgba(147,197,253,0.1)'; ctx.lineWidth = 0.6; ctx.stroke()
+    }
+
+    // 纬线
+    for (let lat = -60; lat <= 60; lat += 30) {
+      ctx.beginPath(); let f = true
+      for (let lon = 0; lon <= 360; lon += 5) {
+        const p = toSphere(lat, lon)
+        if (p.z > 0) { if (f) { ctx.moveTo(p.sx, p.sy); f = false } else ctx.lineTo(p.sx, p.sy) } else { f = true }
+      }
+      ctx.strokeStyle = lat === 0 ? 'rgba(147,197,253,0.18)' : 'rgba(147,197,253,0.06)'
+      ctx.lineWidth = lat === 0 ? 1 : 0.5; ctx.stroke()
+    }
+
+    // IGS 测站光点
+    const pts = [[39.6,115.9],[31.1,121.2],[43.8,125.4],[30.5,114.4],[43.8,87.6],[24.9,121.2]]
+    for (const [lat, lon] of pts) {
+      const p = toSphere(lat, lon)
+      if (p.z > 0) {
+        const a = Math.min(1, p.z / globeR + 0.3)
+        ctx.beginPath(); ctx.arc(p.sx, p.sy, 3, 0, Math.PI*2)
+        ctx.fillStyle = `rgba(96,165,250,${a})`; ctx.fill()
+        ctx.beginPath(); ctx.arc(p.sx, p.sy, 7, 0, Math.PI*2)
+        ctx.strokeStyle = `rgba(96,165,250,${a*0.3})`; ctx.lineWidth = 1; ctx.stroke()
+      }
+    }
+    // === 地球结束 ===
+
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i]
       p.x += p.vx

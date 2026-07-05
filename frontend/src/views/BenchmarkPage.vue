@@ -11,15 +11,18 @@
       </div>
     </div>
 
-    <!-- KPI 总览行 -->
+    // KPI 总览行
     <div class="bm-kpi-row">
       <div class="kpi-card kpi-highlight" v-for="kpi in kpis" :key="kpi.label">
         <div class="kpi-icon" v-html="kpi.icon"></div>
-        <div class="kpi-val">{{ animatedKpis[kpi.key] }}</div>
+        <div class="kpi-val" :class="{ done: kpiDone[kpi.key] }">{{ animatedKpis[kpi.key] }}</div>
         <div class="kpi-label">{{ kpi.label }}</div>
         <div class="kpi-sub">{{ kpi.sub }}</div>
       </div>
     </div>
+
+    <!-- 庆祝粒子爆发 -->
+    <canvas ref="confettiCanvas" class="confetti-canvas" v-if="showConfetti"></canvas>
 
     <!-- 四案例精度对比网格 -->
     <div class="bm-case-grid">
@@ -154,6 +157,9 @@ const validations = [
 
 const radarRef = ref(null)
 const barRef = ref(null)
+const confettiCanvas = ref(null)
+const showConfetti = ref(false)
+const kpiDone = reactive({ totalScenes: false, maxGain: false, avgGain: false, allPositive: false })
 
 function classicBarPct(c) {
   // Normalize: bar width relative to classic RMSE across all cases
@@ -176,7 +182,10 @@ function animateNumber(key, target, suffix = '') {
     const val = Math.round(target * eased * 10) / 10
     animatedKpis[key] = suffix ? val + suffix : val
     if (progress < 1) requestAnimationFrame(tick)
-    else animatedKpis[key] = suffix ? target + suffix : target
+    else {
+      animatedKpis[key] = suffix ? target + suffix : target
+      kpiDone[key] = true
+    }
   }
   requestAnimationFrame(tick)
 }
@@ -227,10 +236,48 @@ onMounted(async () => {
     requestAnimationFrame(tick)
   }
 
+  // Confetti celebration after animations
+  setTimeout(() => {
+    showConfetti.value = true
+    nextTick(() => fireConfetti())
+  }, 2200)
+
   // Charts
   await nextTick()
   renderCharts()
 })
+
+function fireConfetti() {
+  const c = confettiCanvas.value
+  if (!c) return
+  c.width = window.innerWidth; c.height = window.innerHeight
+  const ctx = c.getContext('2d')
+  const particles = []
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: c.width * 0.5, y: c.height * 0.4,
+      vx: (Math.random() - 0.5) * 12, vy: -Math.random() * 14 - 4,
+      life: 1, decay: 0.008 + Math.random() * 0.015,
+      color: ['#3b82f6','#fbbf24','#22c55e','#ef4444','#a855f7','#ec4899'][Math.floor(Math.random()*6)],
+      size: Math.random() * 6 + 3,
+    })
+  }
+  function anim() {
+    ctx.clearRect(0, 0, c.width, c.height)
+    let alive = false
+    for (const p of particles) {
+      if (p.life <= 0) continue
+      alive = true
+      p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life -= p.decay
+      ctx.save(); ctx.globalAlpha = Math.max(0, p.life)
+      ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size, p.size)
+      ctx.restore()
+    }
+    if (alive) requestAnimationFrame(anim)
+    else showConfetti.value = false
+  }
+  requestAnimationFrame(anim)
+}
 
 function renderCharts() {
   const names = cases.value.map(c => c.name)
@@ -307,6 +354,14 @@ function renderCharts() {
   min-height: 100vh;
   background: #0b1120;
   color: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
 }
 
 /* Header */
@@ -389,11 +444,12 @@ function renderCharts() {
   font-size: 28px;
   margin-bottom: 8px;
 }
-.kpi-val {
-  font-size: 32px;
-  font-weight: 800;
-  color: #f1f5f9;
-  letter-spacing: -1px;
+.kpi-val.done {
+  animation: kpiGlow 0.6s ease-out;
+}
+@keyframes kpiGlow {
+  0% { text-shadow: 0 0 20px rgba(59,130,246,0.8); transform: scale(1.1); }
+  100% { text-shadow: none; transform: scale(1); }
 }
 .kpi-label {
   font-size: 13px;

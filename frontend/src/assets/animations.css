@@ -1,0 +1,128 @@
+/* ============================================
+   AI 平差平台 — 动画与过渡系统
+   ============================================ */
+
+/* ---------- 页面入场 ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+/* ---------- 卡片悬浮 ---------- */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* ---------- 骨架屏 ---------- */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e8ecf1 25%, #f0f3f7 50%, #e8ecf1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ---------- 加载脉冲 ---------- */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.spinner {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+}
+.spinner-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #3182ce;
+  animation: pulse-ring 1.2s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+/* ---------- 渐变按钮 ---------- */
+@keyframes btnShine {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.btn-gradient {
+  background: linear-gradient(135deg, #3182ce, #2c5282, #2b6cb0);
+  background-size: 200% 200%;
+  animation: btnShine 3s ease infinite;
+}
+
+/* ---------- 状态指示闪烁 ---------- */
+@keyframes statusBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* ---------- 进度条 ---------- */
+@keyframes progressBar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* ---------- 数字滚动 ---------- */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 涟漪 ---------- */
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ---------- 背景渐变呼吸 ---------- */
+@keyframes bgBreathe {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+/* ---------- 交错入场 (stagger) ---------- */
+.stagger-enter > * {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+.stagger-enter > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-enter > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger-enter > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-enter > *:nth-child(4) { animation-delay: 0.20s; }
+.stagger-enter > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-enter > *:nth-child(6) { animation-delay: 0.30s; }
+.stagger-enter > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-enter > *:nth-child(8) { animation-delay: 0.40s; }
+.stagger-enter > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-enter > *:nth-child(10) { animation-delay: 0.50s; }
+
+/* ---------- 全局平滑滚动 ---------- */
+html { scroll-behavior: smooth; }
+
+/* ---------- 路由过渡 ---------- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.35s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

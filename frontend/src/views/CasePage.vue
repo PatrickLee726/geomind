@@ -164,6 +164,16 @@
         <button class="btn-demo" @click="fillDemoConfig" title="一键填充推荐参数">
           ⚡ 使用示例数据
         </button>
+        <button class="btn-sweep" @click="startSweep" :disabled="sweepRunning" title="自动搜索最优超参数">
+          {{ sweepRunning ? '🔍 搜索中...' : '🔍 智能寻优' }}
+        </button>
+        <div v-if="sweepResult" class="sweep-result">
+          <div class="sweep-best">
+            🏆 最优参数：{{ sweepBestParams }}
+            <span class="sweep-rmse">ML RMSE: {{ sweepBestRmse }}</span>
+          </div>
+          <button class="btn-apply" @click="applySweepResult">应用最优参数</button>
+        </div>
         <div class="config-grid">
           <label v-for="(prop, key) in schemaProps" :key="key" class="field" :title="prop.description || ''">
             {{ prop.title || key }}：
@@ -293,6 +303,74 @@ function fillDemoConfig() {
       config.value[key] = val
     }
   }
+}
+
+// 参数扫描
+const sweepRunning = ref(false)
+const sweepResult = ref(null)
+const sweepBestParams = ref('')
+const sweepBestRmse = ref('')
+
+async function startSweep() {
+  sweepRunning.value = true
+  sweepResult.value = null
+  // Build param grid from schema
+  const grid = {}
+  const props = schemaProps.value
+  if (props.hidden_layers || props.ml_hidden_dims) {
+    grid[props.hidden_layers ? 'hidden_layers' : 'ml_hidden_dims'] = ['64,64', '128,256,128', '256,512,256,128']
+  }
+  if (props.epochs || props.ml_epochs) {
+    grid[props.epochs ? 'epochs' : 'ml_epochs'] = [100, 500, 1500]
+  }
+  if (props.learning_rate || props.ml_learning_rate) {
+    grid[props.learning_rate ? 'learning_rate' : 'ml_learning_rate'] = [0.0005, 0.001, 0.005]
+  }
+  try {
+    const res = await api.post('/sweep/start', { case_id: caseId, param_grid: grid, base_params: config.value })
+    const sid = res.data.sweep_id
+    pollSweep(sid)
+  } catch (e) {
+    sweepRunning.value = false
+    alert('启动扫描失败: ' + (e.response?.data?.detail || e.message))
+  }
+}
+
+async function pollSweep(sid) {
+  try {
+    const res = await api.get(`/sweep/status/${sid}`)
+    const data = res.data
+    if (data.status === 'done') {
+      sweepRunning.value = false
+      const results = data.results
+      if (results && results.length > 0) {
+        const best = results[0]
+        sweepResult.value = results.slice(0, 5)
+        sweepBestParams.value = JSON.stringify(best.params)
+        sweepBestRmse.value = best.RMSE || 'N/A'
+      } else {
+        alert('扫描完成但无有效结果')
+      }
+    } else if (data.status === 'failed') {
+      sweepRunning.value = false
+      alert('扫描失败: ' + (data.error || '未知错误'))
+    } else {
+      setTimeout(() => pollSweep(sid), 2000)
+    }
+  } catch (e) {
+    sweepRunning.value = false
+  }
+}
+
+function applySweepResult() {
+  if (!sweepResult.value || !sweepResult.value.length) return
+  const best = sweepResult.value[0].params
+  for (const [key, val] of Object.entries(best)) {
+    if (key in config.value) {
+      config.value[key] = val
+    }
+  }
+  sweepResult.value = null
 }
 
 onMounted(async () => {
@@ -562,6 +640,55 @@ h1 { font-size: 28px; color: #1a365d; margin-bottom: 4px; }
   border-color: #2563eb;
   border-style: solid;
 }
+.btn-sweep {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  margin: 4px 0 16px 8px;
+  border: 2px dashed #d97706;
+  border-radius: 8px;
+  background: rgba(217,119,6,0.06);
+  color: #d97706;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.btn-sweep:hover:not(:disabled) {
+  background: rgba(217,119,6,0.12);
+  border-color: #b45309;
+  border-style: solid;
+}
+.btn-sweep:disabled { opacity: 0.5; cursor: wait; }
+.sweep-result {
+  margin: 8px 0 16px;
+  padding: 12px 16px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.sweep-best {
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 8px;
+}
+.sweep-rmse {
+  margin-left: 12px;
+  color: #2563eb;
+  font-family: 'JetBrains Mono', monospace;
+}
+.btn-apply {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #d97706;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-apply:hover { background: #b45309; }
 
 .data-info { 
   margin-top: 12px; padding: 10px 14px; background: #f0fff4; border-radius: 8px; font-size: 13px; color: #276749;

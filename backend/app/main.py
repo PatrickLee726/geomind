@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .api import cases, data, jobs, results, benchmark
+from .api import cases, data, jobs, results, benchmark, sweep
 from .core.registry import register
 from .pipelines.troposphere import TropospherePipeline
 from .pipelines.gnss_network import GNSSNetworkPipeline
@@ -39,6 +39,7 @@ app.include_router(data.router)
 app.include_router(jobs.router)
 app.include_router(results.router)
 app.include_router(benchmark.router)
+app.include_router(sweep.router)
 
 
 @app.get("/api/health")

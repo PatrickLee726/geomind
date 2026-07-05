@@ -8,6 +8,7 @@ const api = axios.create({
 export default {
   // 通用
   get: (path) => api.get(path),
+  post: (path, data) => api.post(path, data),
 
   // 案例
   getCases: () => api.get('/cases'),

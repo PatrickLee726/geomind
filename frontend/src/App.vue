@@ -92,18 +92,18 @@ function pollStatus() {
   })
 }
 
-onMounted(() => {
-  loadJobs()
-  window.addEventListener('geomind:job-created', loadJobs)
-  pollTimer = setInterval(pollStatus, 5000)
-})
-
 function handleClickOutside(e) {
   if (showPanel.value && !e.target.closest('.task-panel')) {
     showPanel.value = false
   }
 }
-window.addEventListener('click', handleClickOutside)
+
+onMounted(() => {
+  loadJobs()
+  window.addEventListener('geomind:job-created', loadJobs)
+  window.addEventListener('click', handleClickOutside)
+  pollTimer = setInterval(pollStatus, 5000)
+})
 
 onUnmounted(() => {
   clearInterval(pollTimer)

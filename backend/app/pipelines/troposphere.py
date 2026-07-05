@@ -227,14 +227,6 @@ class TropospherePipeline(Pipeline):
                 np.sin(2*np.pi*hour_arr/24.0), np.cos(2*np.pi*hour_arr/24.0),
                 P_gpt3, T_gpt3, e_gpt3_arr,
             ])
-            # 完整特征（实测优先）
-            # 实测气象：用实测与GPT3的差值（海拔鲁棒），而非原始值
-            X_full = np.column_stack([
-                X.copy(),
-                (P_arr - P_gpt3).reshape(-1,1),
-                (T_arr - T_gpt3).reshape(-1,1),
-                (e_arr - e_gpt3_arr).reshape(-1,1),
-            ])
 
             def train_ml(X_feat, y_tr, y_te, test_idx, name, hidden_str, epochs, lr):
                 hidden_dims = [int(x.strip()) for x in hidden_str.split(',')]
@@ -277,12 +269,9 @@ class TropospherePipeline(Pipeline):
             ml_gpt3_rmse = np.sqrt(np.mean((pred_ml_gpt3 - y_test)**2)) * 100
             log(f"  ML+GPT3      RMSE = {ml_gpt3_rmse:.2f} cm")
 
-            pred_ml_full = train_ml(X_full, y_train, y_test, test_mask,
-                "ML+实测", config.params.get('ml_hidden_dims', config.ml_params.get('hidden_dims', '128,256,128,64')),
-                config.params.get('ml_epochs', config.ml_params.get('epochs', 2000)),
-                config.params.get('ml_learning_rate', config.ml_params.get('learning_rate', 0.001)))
-            ml_full_rmse = np.sqrt(np.mean((pred_ml_full - y_test)**2)) * 100
-            log(f"  ML+实测气象  RMSE = {ml_full_rmse:.2f} cm")
+            pred_ml_full = None
+            ml_full_rmse = float('nan')
+            log(f"  （ML+实测气象已禁用，数据量不足以跨站泛化）")
 
             result.steps.append(StepResult(
                 name="ML训练", status="done",

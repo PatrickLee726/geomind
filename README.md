@@ -44,7 +44,7 @@ GeoMind 是一个将机器学习引入测绘平差领域的开源计算引擎。
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-org/geomind.git
+git clone https://github.com/PatrickLee726/geomind.git
 cd geomind
 
 # 2. 安装后端依赖

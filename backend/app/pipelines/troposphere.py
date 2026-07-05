@@ -74,7 +74,7 @@ class TropospherePipeline(Pipeline):
                 },
                 "ml_epochs": {
                     "type": "integer", "title": "ML训练轮数",
-                    "default": 2000, "minimum": 100, "maximum": 10000,
+                    "default": 500, "minimum": 100, "maximum": 5000,
                 },
                 "ml_learning_rate": {
                     "type": "number", "title": "学习率",
@@ -236,27 +236,46 @@ class TropospherePipeline(Pipeline):
                 X_mean = X_feat[train_mask].mean(axis=0)
                 X_std = X_feat[train_mask].std(axis=0) + 1e-8
                 y_mean = y_tr.mean(); y_std = y_tr.std() + 1e-8
-                X_tr_t = torch.as_tensor((X_feat[train_mask] - X_mean) / X_std, dtype=torch.float32)
+                X_tr_raw = (X_feat[train_mask] - X_mean) / X_std
                 X_te_t = torch.as_tensor((X_feat[test_mask] - X_mean) / X_std, dtype=torch.float32)
                 Y_tr_t = torch.as_tensor(((y_tr - y_mean) / y_std).reshape(-1, 1), dtype=torch.float32)
-                layers = []
+
+                # 网络：BatchNorm → Linear → GELU → Dropout
+                layers = [nn.BatchNorm1d(input_dim)]
                 prev = input_dim
                 for h in hidden_dims:
-                    layers.append(nn.Linear(prev, h)); layers.append(nn.GELU())
-                    layers.append(nn.Dropout(0.1)); prev = h
+                    layers.append(nn.Linear(prev, h))
+                    layers.append(nn.BatchNorm1d(h))
+                    layers.append(nn.GELU())
+                    layers.append(nn.Dropout(0.15))
+                    prev = h
                 layers.append(nn.Linear(prev, 1))
                 model = nn.Sequential(*layers)
-                opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
-                sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.5, patience=150, min_lr=1e-5)
-                best_loss, best_state = float('inf'), None
+                opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+                sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.5, patience=100, min_lr=1e-5)
+                best_loss, best_state, patience_counter = float('inf'), None, 0
+
                 for ep in range(epochs):
                     model.train()
+                    # 数据增强：加小高斯噪声
+                    aug_noise = np.random.randn(*X_tr_raw.shape).astype(np.float32) * 0.02
+                    X_tr_t = torch.as_tensor(X_tr_raw + aug_noise, dtype=torch.float32)
                     pred = model(X_tr_t); loss = nn.MSELoss()(pred, Y_tr_t)
-                    opt.zero_grad(); loss.backward(); opt.step()
-                    sch.step(loss.item())
-                    if loss.item() < best_loss:
+                    opt.zero_grad(); loss.backward()
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                    opt.step(); sch.step(loss.item())
+
+                    if loss.item() < best_loss * 0.999:
                         best_loss = loss.item()
                         best_state = {k: v.clone() for k, v in model.state_dict().items()}
+                        patience_counter = 0
+                    else:
+                        patience_counter += 1
+
+                    # Early stopping
+                    if patience_counter > 300 and ep > 500:
+                        break
+
                 model.load_state_dict(best_state)
                 model.eval()
                 with torch.no_grad():

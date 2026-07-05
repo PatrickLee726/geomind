@@ -228,7 +228,14 @@ class TropospherePipeline(Pipeline):
                 P_gpt3, T_gpt3, e_gpt3_arr,
             ])
             # 完整特征（实测优先）
-            X_full = X.copy()
+            # 完整特征 = 实测气象 + GPT3 估算（18维），ML自学习融合权重
+            X_full = np.column_stack([
+                X.copy(),
+                lat_arr, H_arr,
+                np.sin(2*np.pi*(doy_arr-1)/365.25), np.cos(2*np.pi*(doy_arr-1)/365.25),
+                np.sin(2*np.pi*hour_arr/24.0), np.cos(2*np.pi*hour_arr/24.0),
+                P_gpt3, T_gpt3, e_gpt3_arr,
+            ])
 
             def train_ml(X_feat, y_tr, y_te, test_idx, name, hidden_str, epochs, lr):
                 hidden_dims = [int(x.strip()) for x in hidden_str.split(',')]

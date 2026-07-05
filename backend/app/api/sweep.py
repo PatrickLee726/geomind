@@ -7,8 +7,6 @@ import threading
 
 from ..core.registry import list_all
 from ..core.base import AdjustConfig
-from ..datasources.igs import IGSCDDISDataSource
-from ..datasources.upload import UploadDataSource
 
 router = APIRouter(prefix="/api/sweep", tags=["sweep"])
 

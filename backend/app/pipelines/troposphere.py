@@ -70,7 +70,7 @@ class TropospherePipeline(Pipeline):
                 "split_mode": {
                     "type": "string", "title": "数据划分方式",
                     "enum": ["station", "random"],
-                    "default": "random",
+                    "default": "station",
                     "description": "按站划分（严格空间外推）或随机划分（数据好看）",
                 },
                 "ml_hidden_dims": {
@@ -131,7 +131,7 @@ class TropospherePipeline(Pipeline):
 
         if split_mode == 'station':
             # 严格模式：按站点空间外推
-            n_test_stations = max(1, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
+            n_test_stations = max(2, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
             test_stations = set(rng.choice(stations, n_test_stations, replace=False))
             train_stations = [s for s in stations if s not in test_stations]
             test_mask = np.array([s in test_stations for s in station_arr])

@@ -127,6 +127,8 @@ class TropospherePipeline(Pipeline):
         stations = list(set(r['station'] for r in all_records))
         rng = np.random.default_rng(config.random_seed)
         split_mode = config.params.get('split_mode', 'station')
+        if split_mode not in ('station', 'random'):
+            split_mode = 'station'
         station_arr = np.array([r['station'] for r in all_records])
 
         if split_mode == 'station':

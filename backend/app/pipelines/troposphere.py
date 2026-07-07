@@ -80,7 +80,7 @@ class TropospherePipeline(Pipeline):
                 },
                 "ml_epochs": {
                     "type": "integer", "title": "ML训练轮数",
-                    "default": 2000, "minimum": 100, "maximum": 10000,
+                    "default": 300, "minimum": 50, "maximum": 5000,
                 },
                 "ml_learning_rate": {
                     "type": "number", "title": "学习率",

@@ -251,7 +251,7 @@ const schemaProps = ref({})
 // 数据源
 const sourceType = ref('igs')
 const igsStations = ref([])
-const selectedStations = ref(['BJFS', 'SHAO', 'CHAN', 'WUHN', 'URUM', 'TWTF'])
+const selectedStations = ref(['BJFS', 'SHAO', 'CHAN', 'WUHN', 'TWTF'])
 const daysInput = ref('1,46,91,136,181,226,271,316,351,5')
 const troFiles = ref([])
 const metFiles = ref([])

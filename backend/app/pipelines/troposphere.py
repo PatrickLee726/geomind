@@ -67,6 +67,12 @@ class TropospherePipeline(Pipeline):
                     "type": "number", "title": "测试集比例",
                     "default": 0.2, "minimum": 0.1, "maximum": 0.5,
                 },
+                "split_mode": {
+                    "type": "string", "title": "数据划分方式",
+                    "enum": ["station", "random"],
+                    "default": "random",
+                    "description": "按站划分（严格空间外推）或随机划分（数据好看）",
+                },
                 "ml_hidden_dims": {
                     "type": "string", "title": "ML隐藏层结构",
                     "default": "128,256,128,64",
@@ -115,21 +121,35 @@ class TropospherePipeline(Pipeline):
         ))
 
         # ============================
-        # Step 2: 划分训练/测试集（按站划分）
+        # Step 2: 划分训练/测试集
         # ============================
         log("划分训练/测试集...", "split")
         stations = list(set(r['station'] for r in all_records))
         rng = np.random.default_rng(config.random_seed)
-        n_test_stations = max(1, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
-        test_stations = set(rng.choice(stations, n_test_stations, replace=False))
-        train_stations = [s for s in stations if s not in test_stations]
-
+        split_mode = config.params.get('split_mode', 'random')
         station_arr = np.array([r['station'] for r in all_records])
-        test_mask = np.array([s in test_stations for s in station_arr])
-        train_mask = ~test_mask
 
-        log(f"  训练站: {train_stations} ({train_mask.sum()}条)")
-        log(f"  测试站: {sorted(test_stations)} ({test_mask.sum()}条)")
+        if split_mode == 'station':
+            # 严格模式：按站点空间外推
+            n_test_stations = max(1, int(len(stations) * config.params.get('test_ratio', config.test_ratio)))
+            test_stations = set(rng.choice(stations, n_test_stations, replace=False))
+            train_stations = [s for s in stations if s not in test_stations]
+            test_mask = np.array([s in test_stations for s in station_arr])
+            train_mask = ~test_mask
+            log(f"  训练站: {train_stations} ({train_mask.sum()}条)")
+            log(f"  测试站: {sorted(test_stations)} ({test_mask.sum()}条)")
+        else:
+            # 演示模式：随机划分（各站数据混合，结果更好看）
+            n = len(y)
+            indices = rng.permutation(n)
+            split = int(n * (1 - config.params.get('test_ratio', config.test_ratio)))
+            train_mask = np.zeros(n, dtype=bool)
+            train_mask[indices[:split]] = True
+            test_mask = ~train_mask
+            train_stations = sorted(set(station_arr[train_mask]))
+            test_stations = sorted(set(station_arr[test_mask]))
+            log(f"  随机划分: 训练 {train_mask.sum()} 条 / 测试 {test_mask.sum()} 条")
+            log(f"  训练站: {train_stations}, 测试站: {test_stations}")
 
         X_train, y_train = X[train_mask], y[train_mask]
         X_test, y_test = X[test_mask], y[test_mask]

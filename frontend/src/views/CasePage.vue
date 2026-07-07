@@ -292,7 +292,7 @@ const canSubmit = computed(() => {
 })
 
 const demoConfigs = {
-  troposphere: { hidden_layers: '128,256,128,64', epochs: 150, learning_rate: 0.001, dropout: 0.2, batch_size: 64 },
+  troposphere: { hidden_layers: '128,256,128,64', epochs: 3000, learning_rate: 0.001, dropout: 0.2, batch_size: 64, split_mode: 'random' },
   ionosphere: { hidden_layers: '256,512,256,128', epochs: 300, learning_rate: 0.001, dropout: 0.2, batch_size: 128 },
   gnss: { n_stations: 8, n_groups: 100, outlier_rate: 0.15, noise_std: 2.0, hidden_layers: '64,64', epochs: 200, learning_rate: 0.001 },
   elevation: { scenario: 'B', noise: 0.05, test_ratio: 0.2, hidden_layers: '64,128,64', epochs: 500, learning_rate: 0.001, dropout: 0.2 },
